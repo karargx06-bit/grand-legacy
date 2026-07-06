@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>دليل اللاعب - Grand Legacy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d4af37;
+            --primary-dark: #b8860b;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --card-bg: rgba(26, 26, 26, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #c8c8c8;
+            --border-soft: rgba(212, 175, 55, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif;
+            background: linear-gradient(135deg, #050505 0%, #111 100%);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Topbar */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(15px);
+            background: rgba(10, 10, 10, 0.85);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            border-radius: 30px;
+            padding: 8px 18px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            border-color: var(--primary-color);
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 70px 0 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Quick Nav */
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 40px 0;
+        }
+
+        .quick-nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .quick-nav a:hover {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Layout */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 900px) {
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+
+        /* Sections */
+        .guide-section {
+            background: linear-gradient(145deg, var(--card-bg), rgba(15,15,15,0.9));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-right: 4px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 35px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .guide-section:hover {
+            transform: translateY(-3px);
+            border-color: rgba(212, 175, 55, 0.3);
+            border-right-color: var(--primary-color);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
+        .section-icon {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .guide-section h2 {
+            color: var(--text-primary);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .guide-text {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        /* Lists */
+        .guide-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .guide-list li {
+            position: relative;
+            padding-right: 25px;
+            color: var(--text-secondary);
+        }
+
+        .guide-list li::before {
+            content: "\f104"; /* fa-angle-left */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 0;
+            top: 2px;
+            color: var(--primary-color);
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .highlight-box h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* XP System Special Design */
+        .xp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .xp-card {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        .xp-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .xp-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .xp-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Job Cards in Guide */
+        .job-rec-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .job-rec {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .job-rec:hover {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .job-num {
+            background: var(--primary-color);
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .job-info h4 {
+            color: var(--primary-color);
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        
+        .job-info p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* FAQ details */
+        details.faq-item {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        details.faq-item:hover {
+            border-color: rgba(212,175,55,0.2);
+        }
+
+        details.faq-item summary {
+            padding: 18px 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 600;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        details.faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.faq-item summary::after {
+            content: "\f0d7";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--primary-color);
+            transition: 0.3s;
+        }
+
+        details.faq-item[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        details.faq-item p {
+            padding: 0 20px 20px;
+            color: var(--text-secondary);
+            margin: 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 15px;
+        }
+
+        /* CTA */
+        .footer-action {
+            text-align: center;
+            padding: 20px 0 60px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-color);
+            color: #000;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            background: var(--primary-dark);
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand"><i class="fas fa-book-open"></i> الدليل الرسمي</div>
+            <a class="back-link" href="index.html">العودة للرئيسية <i class="fas fa-arrow-left"></i></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>دليل اللاعب الشامل</h1>
+            <p>
+                مرجعك الكامل للبدء الصحيح داخل Grand Legacy. نقدم لك هنا الأسس التي ستساعدك على بناء إرثك الخاص، وفهم نظام الخبرات المتطور، واختيار مسارك المهني باحترافية.
+            </p>
+            <div class="quick-nav">
+                <a href="#start">البداية السريعة</a>
+                <a href="#jobs">الوظائف الابتدائية</a>
+                <a href="#xp">نظام الخبرات (XP)</a>
+                <a href="#factions">الانضمام للفصائل</a>
+                <a href="#mistakes">أخطاء شائعة</a>
+                <a href="#faq">الأسئلة الشائعة</a>
+            </div>
+        </section>
+
+        <div class="guide-grid">
+            <div class="main-content">
+                
+                <!-- القسم الأول -->
+                <section id="start" class="guide-section">
+                    <div class="section-header">
+                        <div class="section-icon"><i class="fas fa-flag-checkered"></i></div>
+                        <h2>البداية السريعة والأساسيات</h2>
+                    </div>
+                    <p class="guide-text">أول أهدافك عند دخول المدينة ليس الوصول إلى القمة فوراً، بل التأسيس الجيد وفهم آليات المجتمع لتتمكن من بناء مسيرة واقعية ومستقرة.</p>
+                    <ul class="guide-list">
+                        <li><strong>ابتكار الشخصية:</strong> جهز شخصية ذات خلفية درامية منطقية ومسار واضح يناسب عالم اللعبة.</li>
+                        <li><strong>احترام القوانين:</strong> اقرأ القوانين الأساسية وتفهم حدود الواقعية (Roleplay) قبل البدء بأي تفاعل.</li>
+                        <li><strong>الاستقرار المالي:</strong> اختر وظيفة ابتدائية ثابتة لتوفير الدخل الذي يضمن لك اقتناء الضروريات أولاً.</li>
+                        <li><strong>الاستكشاف والتفاعل:</strong> تجول في المدينة، وتعرف على اللاعبين بأسلوب واقعي، وابنِ شبكة علاقات طبيعية.</li>
+                    </ul>
+                </section>
+
+                <!-- القسم الثاني (تم ترتيب الوظائف كما طلب المستخدم) -->
+                <section id="jobs" class="guide-section">
+                    <div class="section-header">
+                        <div class="section-icon"><i class="fas fa-briefcase"></i></div>
+                        <h2>الوظائف المقترحة للمبتدئين</h2>
+                    </div>
+                    <p class="guide-text">لتسهيل اندماجك في الاقتصاد، نوصيك بالبدء بإحدى الوظائف التالية، مرتبة حسب الأولوية ومدى ملاءمتها لفهم ميكانيكيات العمل:</p>
+                    
+                    <div class="job-rec-grid">
+                        <div class="job-rec">
+                            <div class="job-num">1</div>
+                            <div class="job-info">
+                                <h4>الحطاب (Lumberjack)</h4>
+                                <p>الخيار الأول والمثالي. يتميز بالاستقرار والهدوء، مما يمنحك الفرصة لفهم نظام اللعب وجمع دخل ثابت بجهد معتدل.</p>
+                            </div>
+                        </div>
+                        <div class="job-rec">
+                            <div class="job-num">2</div>
+                            <div class="job-info">
+                                <h4>عامل المنجم (Miner)</h4>
+                                <p>وظيفة تتطلب مجهوداً أكبر لكنها تكافئك بمردود مالي وموارد ثمينة. تعتبر خطوة ممتازة لمن يرغب في تحدي أكبر.</p>
+                            </div>
+                        </div>
+                        <div class="job-rec">
+                            <div class="job-num">3</div>
+                            <div class="job-info">
+                                <h4>صائد الأسماك (Fisherman)</h4>
+                                <p>لمحبي الهدوء والابتعاد عن صخب المدينة. وظيفة رائعة لبناء الصبر وجني أرباح تعتمد على مهاراتك في الصيد.</p>
+                            </div>
+                        </div>
+                        <div class="job-rec">
+                            <div class="job-num">4</div>
+                            <div class="job-info">
+                                <h4>سائق النقل / التوصيل</h4>
+                                <p>الخيار الأفضل لمن يرغب في استكشاف خريطة المدينة بسرعة وحفظ الطرق الرئيسية ومعرفة مواقع المنشآت الحيوية.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- القسم الثالث: شرح نظام XP بالكامل -->
+                <section id="xp" class="guide-section">
+                    <div class="section-header">
+                        <div class="section-icon"><i class="fas fa-star"></i></div>
+                        <h2>نظام الخبرات المتطور (XP)</h2>
+                    </div>
+                    <p class="guide-text">
+                        يعتمد خادم <strong>Grand Legacy</strong> نظام خبرات جديداً ومبتكراً، يهدف إلى مكافأة اللاعب على نشاطه الفعلي ومشاركته الفعالة في إحياء السيرفر. هذا النظام يتجاوز المفهوم التقليدي الذي يربط التقدم بالقتال فقط.
+                    </p>
+                    
+                    <div class="xp-grid">
+                        <div class="xp-card">
+                            <i class="fas fa-hands-helping"></i>
+                            <h4>تنوع الأنشطة</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">الخبرة لا تقتصر على المعارك. العمل في الوظائف، مساعدة الآخرين، والمساهمة في الاقتصاد كلها أنشطة تمنحك تقدمًا ملحوظاً في مستواك.</p>
+                        </div>
+                        <div class="xp-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>تقدم تدريجي وعادل</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">يضمن النظام أن كل نشاط إيجابي تقوم به يساهم في رفع مستوى خبرتك بشكل تدريجي، مما يشجعك على الاستمرار وتنويع أسلوب لعبك.</p>
+                        </div>
+                        <div class="xp-card">
+                            <i class="fas fa-gem"></i>
+                            <h4>مكافأة المشاركة</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">كلما زادت مساهمتك الإيجابية وتفاعلك المستمر داخل عالمنا، ازداد تقدمك في نظام الخبرات. النظام يشجع على استكشاف مختلف الأنشطة المتاحة.</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-info-circle"></i> كيف تعمل آلية الخبرة؟</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.7;">
+                            من خلال التفاعل المستمر وممارسة الأعمال والوظائف المختلفة، يقوم النظام بتسجيل تفاعلك الإيجابي. كل عمل تقوم به، وكل نشاط إضافي داخل المدينة يترجم إلى نقاط خبرة (XP) ترفع من مستواك وتفتح لك آفاقاً أوسع للتقدم داخل الخادم بصورة طبيعية وسلسة.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- القسم الرابع -->
+                <section id="factions" class="guide-section">
+                    <div class="section-header">
+                        <div class="section-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h2>الانضمام للفصائل والمنظمات</h2>
+                    </div>
+                    <p class="guide-text">العمل في الفصائل (مثل الشرطة، الإسعاف، أو الجهات الخاصة) هو التزام مهني داخل اللعبة ويتطلب كفاءة.</p>
+                    <ul class="guide-list">
+                        <li><strong>متابعة الإعلانات:</strong> انتظر الإعلان الرسمي عن فتح باب التقديم للجهة التي ترغب بالانضمام إليها.</li>
+                        <li><strong>التقديم الرسمي:</strong> قدم طلبك وفق النموذج والشروط المحددة من قبل قيادة الفصيل.</li>
+                        <li><strong>الاستعداد للمقابلة:</strong> احرص على إثبات جدارتك ومعرفتك بالقوانين والتزامك بالـ Roleplay خلال المقابلة.</li>
+                        <li><strong>السجل النظيف:</strong> اللاعبون الذين يملكون سجلاً خالياً من المخالفات تكون فرصهم في القبول أعلى بكثير.</li>
+                    </ul>
+                </section>
+
+                <!-- القسم الخامس -->
+                <section id="mistakes" class="guide-section">
+                    <div class="section-header">
+                        <div class="section-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <h2>أخطاء شائعة يقع فيها المبتدئون</h2>
+                    </div>
+                    <ul class="guide-list">
+                        <li>التركيز الفوري على شراء السيارات الفاخرة والأسلحة قبل تأمين دخل أساسي ومكان للإقامة.</li>
+                        <li>كسر الواقعية (Fail RP) في المواقف التي تتطلب تفاعلاً جدياً لمجرد المزاح السطحي.</li>
+                        <li>التنقل اليومي والعشوائي بين الوظائف دون اكتساب خبرة كاملة أو استقرار في وظيفة واحدة.</li>
+                        <li>التقديم للفصائل والمنظمات دون إلمام كامل بأساسيات الرول بلاي وقوانين السيرفر الرسمية.</li>
+                    </ul>
+                </section>
+
+            </div>
+            
+            <!-- الشريط الجانبي (Sidebar) -->
+            <div class="sidebar">
+                <section id="faq" class="guide-section" style="padding: 25px; position: sticky; top: 100px;">
+                    <div class="section-header" style="margin-bottom: 20px; padding-bottom: 10px;">
+                        <h2 style="font-size: 1.3rem;"><i class="fas fa-question-circle" style="color: var(--primary-color); margin-left: 8px;"></i> الأسئلة الشائعة</h2>
+                    </div>
+                    
+                    <details class="faq-item">
+                        <summary>ما هي أفضل وظيفة في يومي الأول؟</summary>
+                        <p>كما يوصي الخبراء، يعتبر <strong>الحطاب</strong> الخيار الأفضل لأنه يتيح لك فهم اللعبة والاعتياد عليها في بيئة مريحة.</p>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary>هل المعارك هي الطريقة الوحيدة للتقدم؟</summary>
+                        <p>إطلاقاً. نظام الخبرات المبتكر يكافئك على ممارسة الوظائف بشكل يومي، التفاعل السلمي، والمساهمة في الاقتصاد العام.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>كيف أتواصل مع الإدارة؟</summary>
+                        <p>يمكنك الانضمام لخيارات الدعم عبر الديسكورد الرسمي، أو استخدام نظام البلاغات داخل اللعبة أو الموقع لأي مساعدة.</p>
+                    </details>
+                </section>
+            </div>
+        </div>
+
+        <div class="footer-action">
+            <a class="cta-btn" href="index.html#join"><i class="fab fa-discord"></i> ابدأ مغامرتك الآن</a>
+        </div>
+    </main>
+
+    <script src="notifications.js"></script>
+</body>
+</html>

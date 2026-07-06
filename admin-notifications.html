@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إدارة الإشعارات - Grand Legacy</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d4af37;
+      --bg: #0a0a0a;
+      --card: #141414;
+      --text: #fff;
+      --muted: #c9c9c9;
+      --line: rgba(255,255,255,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Cairo", sans-serif;
+      background: radial-gradient(circle at 15% 20%, rgba(212,175,55,.12), transparent 35%), linear-gradient(160deg, #050505, #131313);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 0 40px;
+    }
+    .container { width: min(1080px, 92%); margin: 0 auto; }
+    .top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .title { color: var(--gold); font-size: 1.6rem; font-weight: 800; }
+    .back {
+      color: var(--text); text-decoration: none; border: 1px solid var(--line);
+      padding: 8px 12px; border-radius: 999px;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-right: 3px solid var(--gold);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .card h2 { color: var(--gold); font-size: 1.15rem; margin-bottom: 10px; }
+    .field { margin-bottom: 10px; }
+    label { display: block; font-size: .9rem; color: #f1f1f1; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--line);
+      background: #1a1a1a; color: #fff; font-family: inherit;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    button {
+      border: none; border-radius: 999px; padding: 9px 14px;
+      font-family: inherit; font-weight: 700; cursor: pointer;
+    }
+    .btn-main { background: var(--gold); color: #000; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid var(--line); }
+    .list { display: grid; gap: 10px; max-height: 74vh; overflow: auto; padding-left: 2px; }
+    .item {
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+    .item-head { display: flex; justify-content: space-between; gap: 8px; }
+    .item-title { color: var(--gold); font-weight: 700; }
+    .item-msg { color: var(--muted); margin: 6px 0; font-size: .92rem; }
+    .pill {
+      display: inline-block; font-size: .76rem; border-radius: 999px; padding: 3px 8px;
+      border: 1px solid var(--line); color: #eee;
+    }
+    .small { color: #9f9f9f; font-size: .8rem; }
+    .msg { margin-top: 8px; padding: 8px 10px; border-radius: 9px; display: none; }
+    .ok { background: rgba(76,175,80,.18); border: 1px solid rgba(76,175,80,.4); }
+    .err { background: rgba(244,67,54,.18); border: 1px solid rgba(244,67,54,.4); }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top">
+      <h1 class="title"><i class="fas fa-bell"></i> إدارة الإشعارات</h1>
+      <a class="back" href="index.html">العودة للرئيسية</a>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>إنشاء / تعديل إشعار</h2>
+        <div class="field">
+          <label for="adminToken">Admin Token</label>
+          <input id="adminToken" type="password" placeholder="ادخل ADMIN_TOKEN">
+        </div>
+        <div class="field">
+          <label for="title">العنوان</label>
+          <input id="title" type="text" placeholder="عنوان الإشعار">
+        </div>
+        <div class="field">
+          <label for="message">النص</label>
+          <textarea id="message" placeholder="نص الإشعار"></textarea>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="type">النوع</label>
+            <select id="type">
+              <option value="announcement">عام</option>
+              <option value="urgent">عاجل</option>
+              <option value="maintenance">صيانة</option>
+              <option value="update">تحديث</option>
+              <option value="event">فعالية</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="priority">الأولوية (1-100)</label>
+            <input id="priority" type="number" min="1" max="100" value="50">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="startAt">بداية الظهور</label>
+            <input id="startAt" type="datetime-local">
+          </div>
+          <div class="field">
+            <label for="endAt">نهاية الظهور</label>
+            <input id="endAt" type="datetime-local">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="ctaText">نص الزر (اختياري)</label>
+            <input id="ctaText" type="text" placeholder="تفاصيل">
+          </div>
+          <div class="field">
+            <label for="linkUrl">الرابط (اختياري)</label>
+            <input id="linkUrl" type="url" placeholder="https://...">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-main" id="createBtn">نشر إشعار</button>
+          <button class="btn-ghost" id="refreshBtn">تحديث القائمة</button>
+        </div>
+        <div class="msg" id="formMsg"></div>
+      </section>
+
+      <section class="card">
+        <h2>الإشعارات الحالية</h2>
+        <div class="list" id="list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const API = "https://gl-reports-worker0.karargx06.workers.dev";
+      const tokenInput = document.getElementById("adminToken");
+      const list = document.getElementById("list");
+      const formMsg = document.getElementById("formMsg");
+
+      const fields = {
+        title: document.getElementById("title"),
+        message: document.getElementById("message"),
+        type: document.getElementById("type"),
+        priority: document.getElementById("priority"),
+        startAt: document.getElementById("startAt"),
+        endAt: document.getElementById("endAt"),
+        ctaText: document.getElementById("ctaText"),
+        linkUrl: document.getElementById("linkUrl")
+      };
+
+      tokenInput.value = localStorage.getItem("gl_admin_token") || "";
+      tokenInput.addEventListener("change", () => localStorage.setItem("gl_admin_token", tokenInput.value.trim()));
+
+      function showMsg(message, ok) {
+        formMsg.textContent = message;
+        formMsg.className = "msg " + (ok ? "ok" : "err");
+        formMsg.style.display = "block";
+      }
+
+      function toIso(localValue) {
+        if (!localValue) return null;
+        const d = new Date(localValue);
+        return isNaN(d) ? null : d.toISOString();
+      }
+
+      async function readApiResponse(resp) {
+        const text = await resp.text();
+        try {
+          return text ? JSON.parse(text) : {};
+        } catch (error) {
+          return { ok: false, error: text || ("HTTP " + resp.status) };
+        }
+      }
+
+      function endpointNotFoundMessage() {
+        return "مسار الإشعارات غير منشور على Cloudflare Worker. ادمج notifications-worker.js داخل Worker الحالي ثم اعمل Deploy.";
+      }
+
+      async function createNotification() {
+        const token = tokenInput.value.trim();
+        if (!token) {
+          showMsg("أدخل ADMIN_TOKEN أولاً.", false);
+          return;
+        }
+        if (!fields.title.value.trim() || !fields.message.value.trim()) {
+          showMsg("العنوان والنص مطلوبان.", false);
+          return;
+        }
+
+        const payload = {
+          title: fields.title.value.trim(),
+          message: fields.message.value.trim(),
+          type: fields.type.value,
+          priority: Number(fields.priority.value || 50),
+          start_at: toIso(fields.startAt.value),
+          end_at: toIso(fields.endAt.value),
+          cta_text: fields.ctaText.value.trim() || null,
+          link_url: fields.linkUrl.value.trim() || null
+        };
+
+        const resp = await fetch(API + "/admin/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await readApiResponse(resp);
+        if (resp.status === 404) {
+          showMsg(endpointNotFoundMessage(), false);
+          return;
+        }
+        if (!resp.ok || !data.ok) {
+          showMsg(data.error || "فشل إنشاء الإشعار.", false);
+          return;
+        }
+
+        showMsg("تم إنشاء الإشعار بنجاح.", true);
+        fields.title.value = "";
+        fields.message.value = "";
+        fields.ctaText.value = "";
+        fields.linkUrl.value = "";
+        await loadList();
+      }
+
+      async function loadList() {
+        const token = tokenInput.value.trim();
+        if (!token) {
+          list.innerHTML = '<div class="small">أدخل ADMIN_TOKEN لعرض القائمة.</div>';
+          return;
+        }
+
+        const resp = await fetch(API + "/admin/notifications", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await readApiResponse(resp);
+        if (resp.status === 404) {
+          list.innerHTML = '<div class="small">' + endpointNotFoundMessage() + '</div>';
+          return;
+        }
+        if (!resp.ok || !data.ok) {
+          list.innerHTML = '<div class="small">تعذر تحميل القائمة: ' + (data.error || "خطأ") + '</div>';
+          return;
+        }
+
+        const rows = data.notifications || [];
+        if (!rows.length) {
+          list.innerHTML = '<div class="small">لا توجد إشعارات حاليًا.</div>';
+          return;
+        }
+
+        list.innerHTML = "";
+        for (const n of rows) {
+          const item = document.createElement("div");
+          item.className = "item";
+          item.innerHTML = `
+            <div class="item-head">
+              <div class="item-title">${n.title}</div>
+              <span class="pill">${n.is_active ? "نشط" : "متوقف"}</span>
+            </div>
+            <div class="item-msg">${n.message}</div>
+            <div class="small">النوع: ${n.type} | الأولوية: ${n.priority}</div>
+            <div class="small">البداية: ${n.start_at || "الآن"} | النهاية: ${n.end_at || "بدون"}</div>
+            <div class="actions" style="margin-top:8px;">
+              <button class="btn-ghost" data-toggle="${n.id}">${n.is_active ? "إيقاف" : "تفعيل"}</button>
+              <button class="btn-ghost" data-delete="${n.id}">حذف</button>
+            </div>
+          `;
+          list.appendChild(item);
+        }
+
+        list.querySelectorAll("[data-toggle]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-toggle");
+            await fetch(API + "/admin/notifications/" + id + "/toggle", {
+              method: "PATCH",
+              headers: {
+                "Authorization": "Bearer " + token
+              }
+            });
+            loadList();
+          });
+        });
+
+        list.querySelectorAll("[data-delete]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-delete");
+            await fetch(API + "/admin/notifications/" + id, {
+              method: "DELETE",
+              headers: {
+                "Authorization": "Bearer " + token
+              }
+            });
+            loadList();
+          });
+        });
+      }
+
+      document.getElementById("createBtn").addEventListener("click", createNotification);
+      document.getElementById("refreshBtn").addEventListener("click", loadList);
+      loadList();
+    })();
+  </script>
+</body>
+</html>

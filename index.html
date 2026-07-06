@@ -1,0 +1,2842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grand Legacy - لعبة الحياة الواقعية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #D4AF37;
+            --primary-dark: #B8860B;
+            --primary-light: #FFDF00;
+            --secondary-color: #000000;
+            --secondary-light: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #141414;
+            --danger: #F44336;
+            --success: #4CAF50;
+            --info: #2196F3;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            direction: rtl;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.14), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.04), transparent 45%),
+                linear-gradient(145deg, #050505 0%, #0b0b0b 45%, #121212 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.55s ease, visibility 0.55s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-content {
+            text-align: center;
+            position: relative;
+            padding: 34px 28px 26px;
+            border-radius: 24px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            box-shadow:
+                0 22px 40px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(212, 175, 55, 0.12);
+            backdrop-filter: blur(6px);
+        }
+
+        .loading-emblem {
+            width: 116px;
+            height: 116px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            position: relative;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            background: radial-gradient(circle at 30% 28%, rgba(212, 175, 55, 0.24), rgba(0, 0, 0, 0.55) 68%);
+            box-shadow: inset 0 0 22px rgba(212, 175, 55, 0.2);
+        }
+
+        .loading-emblem::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary-color);
+            border-right-color: rgba(212, 175, 55, 0.45);
+            animation: loaderOrbit 1.6s linear infinite;
+        }
+
+        .eagle-loading-img {
+            width: 74px;
+            height: 74px;
+            object-fit: contain;
+            border-radius: 12px;
+            filter:
+                drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55))
+                drop-shadow(0 0 12px rgba(212, 175, 55, 0.3))
+                saturate(1.08)
+                contrast(1.05);
+            animation: eagleFloat 1.8s ease-in-out infinite;
+        }
+
+        .loading-title {
+            margin-top: 8px;
+            color: var(--primary-color);
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-size: 0.98rem;
+        }
+
+        .loading-progress {
+            width: min(230px, 72vw);
+            height: 4px;
+            margin: 16px auto 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .loading-progress::before {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 42%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), var(--primary-color), rgba(255, 223, 0, 0.45));
+            animation: loadingSlide 1.35s ease-in-out infinite;
+        }
+
+        @keyframes loaderOrbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes eagleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes loadingSlide {
+            0% { transform: translateX(-130%); }
+            100% { transform: translateX(320%); }
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--primary-color);
+            transition: background 0.3s;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.96);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-eagle-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.4));
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .logo-eagle-img:hover {
+            filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.5)) brightness(1.2);
+            transform: scale(1.05);
+        }
+
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-color);
+        }
+
+        .cta-nav {
+            background: var(--primary-color);
+            color: var(--secondary-color) !important;
+        }
+
+        .cta-nav:hover {
+            background: var(--primary-dark) !important;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            position: relative;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(212, 175, 55, 0.2), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06), transparent 30%),
+                radial-gradient(circle at 70% 75%, rgba(212, 175, 55, 0.1), transparent 40%),
+                linear-gradient(135deg, #0a0f1d 0%, #111827 45%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            margin-top: 70px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.62)),
+                repeating-linear-gradient(
+                    120deg,
+                    rgba(255, 255, 255, 0.02) 0px,
+                    rgba(255, 255, 255, 0.02) 2px,
+                    transparent 2px,
+                    transparent 14px
+                );
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .features {
+            background: var(--bg-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--secondary-light);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+        }
+
+        .jobs-grid,
+        .companies-grid,
+        .company-types-grid,
+        .requirements-grid,
+        .laws-grid,
+        .crime-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .job-card,
+        .company-card,
+        .company-type-card,
+        .requirement-card,
+        .law-card,
+        .crime-card {
+            background: var(--secondary-light);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .job-card:hover,
+        .company-card:hover,
+        .company-type-card:hover,
+        .requirement-card:hover,
+        .law-card:hover,
+        .crime-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .job-card:hover,
+        .company-card:hover,
+        .company-type-card:hover,
+        .requirement-card:hover,
+        .law-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .crime-card:hover {
+            border-color: var(--danger);
+            box-shadow: 0 10px 20px rgba(244, 67, 54, 0.2);
+        }
+
+        .job-icon,
+        .company-icon,
+        .company-type-icon,
+        .requirement-icon,
+        .crime-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .job-icon,
+        .company-icon,
+        .requirement-icon {
+            color: var(--primary-color);
+        }
+
+        .company-type-icon.legal {
+            color: var(--success);
+        }
+
+        .company-type-icon.illegal,
+        .crime-icon {
+            color: var(--danger);
+        }
+
+        .job-title,
+        .company-title,
+        .company-type-title,
+        .requirement-title,
+        .crime-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .job-title,
+        .company-title,
+        .requirement-title {
+            color: var(--text-primary);
+        }
+
+        .company-type-title.legal {
+            color: var(--success);
+        }
+
+        .company-type-title.illegal,
+        .crime-title {
+            color: var(--danger);
+        }
+
+        .job-desc,
+        .company-desc,
+        .company-type-desc,
+        .requirement-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .job-tag,
+        .badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .job-tag {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--primary-color);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        .badge.legal {
+            background: rgba(76, 175, 80, 0.12);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.25);
+        }
+
+        .badge.illegal {
+            background: rgba(244, 67, 54, 0.12);
+            color: #ff8a80;
+            border: 1px solid rgba(244, 67, 54, 0.25);
+        }
+
+        .info-box {
+            background: rgba(212, 175, 55, 0.08);
+            border-right: 4px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .warning-box i {
+            font-size: 2rem;
+            color: var(--danger);
+            margin-top: 2px;
+        }
+
+        .company-section {
+            background: var(--bg-secondary);
+        }
+
+        .company-highlight-box {
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(255,255,255,0.02));
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 35px;
+        }
+
+        .company-highlight-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .company-list {
+            list-style: none;
+            margin-top: 14px;
+        }
+
+        .company-list li {
+            position: relative;
+            padding-right: 24px;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .company-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .company-type-card {
+            border-top: 4px solid transparent;
+        }
+
+        .company-type-card.legal-card {
+            border-top-color: var(--success);
+        }
+
+        .company-type-card.illegal-card {
+            border-top-color: var(--danger);
+        }
+
+        .company-subtitle {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            margin-top: 16px;
+        }
+
+        /* Companies Visual Upgrade */
+        .companies-hero-box {
+            background:
+                linear-gradient(135deg, rgba(212,175,55,0.10), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 35%);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        }
+
+        .companies-hero-box h3 {
+            color: var(--primary-color);
+            font-size: 1.55rem;
+            margin-bottom: 12px;
+        }
+
+        .companies-hero-box p {
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .company-pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .company-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(212,175,55,0.24);
+            background: rgba(212,175,55,0.10);
+            color: var(--primary-color);
+        }
+
+        .company-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin: 28px 0 34px;
+        }
+
+        .company-flow-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 22px;
+            transition: 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-flow-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .company-flow-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.25);
+        }
+
+        .company-flow-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(212,175,55,0.14);
+            color: var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .company-flow-card h4 {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .company-flow-card p {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            margin: 0;
+        }
+
+        .company-split-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .company-panel {
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            background: var(--secondary-light);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .company-panel.legal-panel {
+            border-top: 4px solid var(--success);
+        }
+
+        .company-panel.illegal-panel {
+            border-top: 4px solid var(--danger);
+        }
+
+        .company-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .company-panel-header i {
+            font-size: 2rem;
+        }
+
+        .company-panel.legal-panel .company-panel-header i,
+        .company-panel.legal-panel .company-panel-title {
+            color: var(--success);
+        }
+
+        .company-panel.illegal-panel .company-panel-header i,
+        .company-panel.illegal-panel .company-panel-title {
+            color: var(--danger);
+        }
+
+        .company-panel-title {
+            font-size: 1.35rem;
+            margin: 0;
+        }
+
+        .company-panel p {
+            color: var(--text-secondary);
+        }
+
+        .company-mini-title {
+            margin: 18px 0 12px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .company-bullet-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .company-bullet-list li {
+            position: relative;
+            padding-right: 22px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .company-bullet-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-weight: 900;
+        }
+
+        .legal-panel .company-bullet-list li::before {
+            color: var(--success);
+        }
+
+        .illegal-panel .company-bullet-list li::before {
+            color: var(--danger);
+        }
+
+        .assets-grid,
+        .risks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .asset-card,
+        .risk-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            transition: 0.3s ease;
+        }
+
+        .asset-card:hover,
+        .risk-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .asset-card i,
+        .risk-card i {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+        }
+
+        .asset-card i {
+            color: var(--primary-color);
+        }
+
+        .risk-card i {
+            color: var(--danger);
+        }
+
+        .asset-card h4,
+        .risk-card h4 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .asset-card p,
+        .risk-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+
+        .company-note-box {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            border-right: 4px solid var(--primary-color);
+            background: rgba(212,175,55,0.08);
+            color: var(--text-secondary);
+        }
+
+        .company-note-box strong {
+            color: var(--primary-color);
+        }
+
+        /* Government orgs */
+        .org-tabs {
+            background: var(--secondary-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--bg-primary);
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .tab-content {
+            padding: 40px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .org-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .org-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+        }
+
+        .org-text h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .org-text p + p {
+            margin-top: 14px;
+        }
+
+        .org-badge,
+        .crime-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .org-badge {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--primary-color);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+
+        .crime-badge {
+            background: rgba(244, 67, 54, 0.12);
+            color: #ff8a80;
+            border: 1px solid rgba(244, 67, 54, 0.35);
+        }
+
+        .org-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 22px 0 26px;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .summary-card h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .summary-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+
+        .subdivision-title,
+        .rank-title,
+        .crime-orgs-title {
+            font-size: 1.15rem;
+            margin: 28px 0 16px;
+            color: var(--text-primary);
+        }
+
+        .subdivision-grid,
+        .rank-grid,
+        .crime-orgs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+        }
+
+        .subdivision-card,
+        .rank-card,
+        .crime-org-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .subdivision-card:hover,
+        .rank-card:hover,
+        .crime-org-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212, 175, 55, 0.35);
+        }
+
+        .subdivision-card i,
+        .rank-card i,
+        .crime-org-card i {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .subdivision-card h4,
+        .rank-card h4,
+        .crime-org-card h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subdivision-card p,
+        .rank-card p,
+        .crime-org-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .relation-note {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-right: 4px solid var(--primary-color);
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--text-secondary);
+            border-radius: 10px;
+        }
+
+        .org-features {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .org-features li {
+            padding: 10px 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-right: 25px;
+        }
+
+        .org-features li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .laws-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .law-card {
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .law-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .law-desc {
+            color: var(--text-secondary);
+        }
+
+        .join {
+            background: linear-gradient(135deg, var(--secondary-light), var(--bg-primary));
+            text-align: center;
+        }
+
+        .join-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            transform: translateY(-3px);
+        }
+
+        .footer {
+            background: var(--bg-primary);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            color: var(--text-secondary);
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (min-width: 768px) {
+            .org-content {
+                grid-template-columns: auto 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(0, 0, 0, 0.95);
+                flex-direction: column;
+                padding: 40px 20px;
+                transition: right 0.3s;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .company-split-grid,
+            .company-flow-grid,
+            .assets-grid,
+            .risks-grid,
+            .org-summary,
+            .subdivision-grid,
+            .rank-grid,
+            .crime-orgs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-content {
+                padding: 24px;
+            }
+
+            .companies-hero-box {
+                padding: 22px;
+            }
+        }
+
+        /* Enhanced Jobs Section */
+        .job-card {
+            background: linear-gradient(145deg, var(--secondary-light), rgba(26,26,26,0.8));
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .job-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .job-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .job-card .job-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: rgba(212, 175, 55, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .job-card:hover .job-icon {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            transform: rotateY(180deg);
+        }
+
+        .job-card .job-title {
+            font-size: 1.4rem;
+            margin-bottom: 0;
+            font-weight: 800;
+        }
+
+        .job-card .job-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .job-card .job-desc p {
+            margin: 0;
+        }
+
+        .job-details {
+            background: rgba(0,0,0,0.25);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .job-detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .job-detail-item i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+
+        .job-detail-item div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .job-detail-item strong {
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+        }
+
+        .job-detail-item span {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .job-tags {
+            margin-top: auto;
+        }
+
+        .job-card .job-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-top: 0;
+        }
+
+        .job-card:hover .job-tag {
+            background: rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-emblem">
+                <img src="photos/logo.png" alt="شعار Grand Legacy - نسر" class="eagle-loading-img">
+            </div>
+            <h2 class="loading-title">Grand Legacy</h2>
+            <p class="loading-text">تجهيز العالم... لحظات ونبدأ</p>
+            <div class="loading-progress" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <img src="photos/logo.png" alt="شعار Grand Legacy - طائر العقاب" class="logo-eagle-img" id="site-logo">
+                </div>
+                <div class="logo-text">
+                    <h1>Grand Legacy</h1>
+                    <p>لعبة الحياة الواقعية</p>
+                </div>
+            </a>
+
+            <button class="menu-toggle" id="menuToggle" type="button" aria-label="فتح الاختصارات" aria-controls="shortcutDrawer" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+
+    <aside class="shortcut-drawer" id="shortcutDrawer" aria-label="اختصارات الموقع" aria-hidden="true">
+        <div class="drawer-header">
+            <div>
+                <span class="drawer-eyebrow">Grand Legacy</span>
+                <h2>اختصارات الموقع</h2>
+            </div>
+            <button class="drawer-close" id="drawerClose" type="button" aria-label="إغلاق الاختصارات">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <ul class="nav-menu drawer-menu" id="navMenu">
+            <li><a href="#home" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+            <li><a href="#features" class="nav-link"><i class="fas fa-star"></i> المميزات</a></li>
+            <li><a href="#jobs" class="nav-link"><i class="fas fa-briefcase"></i> الوظائف العامة</a></li>
+            <li><a href="companies.html" class="nav-link"><i class="fas fa-building"></i> الشركات</a></li>
+            <li><a href="#organizations" class="nav-link"><i class="fas fa-landmark"></i> المنظمات الحكومية</a></li>
+            <li><a href="#laws" class="nav-link"><i class="fas fa-gavel"></i> القوانين</a></li>
+            <li><a href="#server-rules" class="nav-link"><i class="fas fa-scroll"></i> قوانين اللعبة</a></li>
+            <li><a href="player-guide.html" class="nav-link"><i class="fas fa-book-open"></i> دليل اللاعب</a></li>
+            <li><a href="#join" class="nav-link cta-nav"><i class="fab fa-discord"></i> انضم الآن</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">عش حياتك <span class="highlight">الثانية</span> في Grand Legacy</h1>
+                    <p class="hero-description">
+                        لعبة حياة واقعية للجوال تمنحك حرية اختيار مسارك. ابدأ من الوظائف العامة البسيطة،
+                        طوّر دخلك وخبرتك، ثم انتقل إلى عالم الشركات والمؤسسات والنفوذ داخل مدينة ديناميكية
+                        مليئة بالفرص والمخاطر.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#jobs" class="btn btn-primary">
+                            <i class="fas fa-play-circle"></i>
+                            ابدأ الرحلة
+                        </a>
+                        <a href="#join" class="btn btn-secondary">
+                            <i class="fab fa-discord"></i>
+                            انضم للديسكورد
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section features">
+            <div class="container">
+                <h2 class="section-title">لماذا <span class="highlight">Grand Legacy</span>؟</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">مجتمع حي</h3>
+                        <p class="feature-description">تفاعل مع اللاعبين داخل عالم متجدد مليء بالأنشطة والمسارات المختلفة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3 class="feature-title">وظائف عامة متنوعة</h3>
+                        <p class="feature-description">ابدأ من الوظائف اليومية البسيطة وابنِ شخصيتك خطوة بخطوة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3 class="feature-title">نظام شركات متقدم</h3>
+                        <p class="feature-description">اشترِ شركة ووسّع أعمالك القانونية أو غير القانونية وفق استراتيجيتك.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">منظمات حكومية متطورة</h3>
+                        <p class="feature-description">انضم إلى مؤسسات حكومية بهياكل واضحة ومسارات مهنية متعددة.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="jobs" class="section">
+            <div class="container">
+                <h2 class="section-title">اختر <span class="highlight">مسارك</span> المهني</h2>
+                <p class="section-subtitle">
+                    تعتبر الوظائف العامة البوابة الأولى لتأسيس حياة مستقرة وبناء ثروتك داخل المدينة. 
+                    يوفر هذا النظام اقتصاداً متوازناً وتجربة تفاعلية تتيح لك اكتساب المهارات، استكشاف العالم، والاندماج في الدورة الاقتصادية لـ Grand Legacy.
+                </p>
+
+                <div class="jobs-grid">
+                    <!-- 1. صيد السمك -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-fish"></i>
+                            </div>
+                            <h3 class="job-title">صيد السمك</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>تتطلب هذه المهنة قدراً كبيراً من الصبر والقدرة على اختيار المواقع البحرية المناسبة. يقوم العاملون باصطياد أنواع متنوعة من الأسماك باستخدام المعدات المخصصة، ثم توريدها إلى الأسواق المحلية لدعم احتياجات المدينة الغذائية.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>الاعتماد على الهدوء واختيار التوقيت والموقع المناسب للصيد.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - هادئ</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>أرباح متغيرة تعتمد على حجم وندرة الصيد اليومي.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">مورد طبيعي</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. مزيل الثلج -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-snowflake"></i>
+                            </div>
+                            <h3 class="job-title">مزيل الثلج</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>في أوقات العواصف الثلجية وتقلبات الطقس، تبرز أهمية هذه الوظيفة الحيوية. يتمثل دورك في قيادة المركبات الثقيلة المخصصة لإزالة الجليد المتراكم عن الطرقات، مما يضمن استمرار الحركة المرورية ووصول الإمدادات بأمان.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>التدخل الحاسم لضمان أمان الطرق في الظروف الجوية القاسية.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - طارئ</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>عوائد مجزية نظير العمل في ظروف جوية صعبة.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">خدمة طوارئ</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. المصنع -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <h3 class="job-title">المصنع</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>تمثل المصانع عصب الإنتاج والاقتصاد في المدينة. يتركز العمل هنا على تشغيل الآلات، التعامل مع المواد الخام، ومراقبة خطوط الإنتاج لضمان خروج المنتجات بأعلى معايير الجودة لتلبية متطلبات السوق الداخلي والخارجي.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>تحويل المواد الخام إلى منتجات نهائية تدعم الاقتصاد.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>تعاوني - متوسط</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>أرباح دورية ترتبط بشكل مباشر بالكفاءة التشغيلية والإنتاج.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">إنتاج وصناعة</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. المنجم -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-gem"></i>
+                            </div>
+                            <h3 class="job-title">المنجم</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>يرتكز العمل في المناجم على التنقيب الشاق واستخراج المعادن الثمينة من أعماق الأرض. يواجه العاملون في هذا المجال تحديات البيئة القاسية، لكنها تُعد من أهم مصادر الثروة الأساسية التي تُبنى عليها صناعات أخرى.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>العمل اليدوي المكثف لاستخراج المواد النادرة والقيمة.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - عميق</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>مكافآت ممتازة تتصاعد مع زيادة قيمة الموارد المستخرجة.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">استخراج موارد</span>
+                        </div>
+                    </div>
+
+                    <!-- 5. الصياد -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-crosshairs"></i>
+                            </div>
+                            <h3 class="job-title">الصياد</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>مهنة مخصصة لمحبي الطبيعة البرية وتتبع الأثر. تعتمد هذه الوظيفة على تعقب الفرائس في الغابات النائية باستخدام مهارات البقاء، بهدف توفير الموارد الحيوانية النادرة والجلود بطريقة مدروسة تحافظ على التوازن البيئي.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>تتبع دقيق وتكتيك عالٍ في بيئات برية غير متوقعة.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - تكتيكي</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>أرباح مرتفعة تعتمد على احترافية الصيد وندرة الفرائس.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">مهارات برية</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. سائق شاحنة النفايات -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-truck-moving"></i>
+                            </div>
+                            <h3 class="job-title">سائق شاحنة النفايات</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>الحفاظ على المظهر الحضاري للمدينة هو حجر الأساس لبيئة صحية. يتولى السائقون قيادة الشاحنات المتخصصة لجمع المخلفات من الأحياء السكنية والتجارية، ثم نقلها بمسارات منظمة إلى مراكز المعالجة وإعادة التدوير.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>تقديم خدمة بلدية حيوية لضمان استمرار الحياة الحضرية النظيفة.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>متوسط - ميداني</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>رواتب دورية ثابتة ومضمونة تدعمها حكومة المدينة.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">خدمة بلدية</span>
+                        </div>
+                    </div>
+
+                    <!-- 7. ناقل الأموال -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-truck-shield"></i>
+                            </div>
+                            <h3 class="job-title">ناقل الأموال</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>وظيفة أمنية ولوجستية بالغة الحساسية، تعتمد على تأمين ونقل الأموال والمقتنيات الثمينة بين البنوك والمؤسسات التجارية الكبرى. تتطلب المهنة دقة عالية، حذراً شديداً، والالتزام الصارم بأعلى معايير الحماية أثناء القيادة.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>نقل آمن للموارد المالية الحساسة تحت حراسة وتأمين عالٍ.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>متوسط - حذر</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>دخول مالية ممتازة نظير تحمل مسؤولية ومخاطر النقل الثمين.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">أمن ولوجستيات</span>
+                        </div>
+                    </div>
+
+                    <!-- 8. رجل الإطفاء -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-fire-extinguisher"></i>
+                            </div>
+                            <h3 class="job-title">رجل الإطفاء</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>يمثل رجال الإطفاء خط الدفاع الأول ضد الكوارث والحوادث الطارئة. تتضمن مهامهم الأساسية إخماد الحرائق، التعامل مع البلاغات الخطرة، وضمان سلامة المواطنين والممتلكات بسرعة استجابة قياسية واحترافية تامة.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>الاستجابة الفورية للطوارئ والعمل الجماعي تحت الضغوطات.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>عالٍ - تعاوني وميداني</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>مكافآت حكومية مرموقة مبنية على سرعة ونجاح الاستجابات.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">طوارئ وإنقاذ</span>
+                        </div>
+                    </div>
+
+                    <!-- 9. حطاب -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <h3 class="job-title">حطاب</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>يعتمد هذا المسار المهني العريق على استخراج الأخشاب من الغابات المخصصة ومعالجتها لتوفير الموارد الأولية المطلوبة في المدينة. تتطلب هذه الوظيفة جهداً بدنياً وتفرغاً لضمان الإمداد المستمر للسوق بالمواد الأساسية.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>توفير اللبنات والموارد الأساسية لدعم قطاع البناء والصناعة.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - هادئ</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>عوائد مستقرة وآمنة تتناسب طردياً مع كمية الإنتاج اليومي.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">موارد أساسية</span>
+                        </div>
+                    </div>
+
+                    <!-- 10. عامل في الميناء -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-anchor"></i>
+                            </div>
+                            <h3 class="job-title">عامل في الميناء</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>يشكل الميناء البوابة التجارية النابضة للمدينة، وتتمحور المهام هنا حول إدارة الحاويات، تفريغ الشحنات البحرية، وتحميل البضائع الاستراتيجية. يتطلب العمل تركيزاً عالياً وقدرة على التنسيق وسط بيئة لوجستية مزدحمة.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>التعامل المباشر مع عصب الحركة اللوجستية والتجارية للمدينة.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>متوسط - نشط</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>أجور مجزية تعتمد على كفاءة وسرعة إنجاز المهام اللوجستية.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">مرافق ولوجستيات</span>
+                        </div>
+                    </div>
+
+                    <!-- 11. موصل طلبات -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-motorcycle"></i>
+                            </div>
+                            <h3 class="job-title">موصل طلبات</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>تمثل حلقة الوصل الحيوية بين المتاجر التجارية والسكان، حيث يتولى الموظف استلام وتوصيل الطرود والطلبات اليومية في مختلف أنحاء المدينة. تتطلب الوظيفة دراية واسعة بالطرق ومرونة في التنقل.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>استكشاف مستمر للمدينة وتفاعل مباشر مع المواطنين.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>عالٍ - تفاعلي</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>دخل فوري وسريع يتصاعد مع عدد التوصيلات المنجزة.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">خدمات ونقل</span>
+                        </div>
+                    </div>
+
+                    <!-- 12. موصل جرائد -->
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <h3 class="job-title">موصل جرائد</h3>
+                        </div>
+                        <div class="job-desc">
+                            <p>تلعب هذه الوظيفة دوراً تقليدياً مهماً في نقل الأخبار والإعلانات إلى المواطنين. تبدأ المهام عادة بتوزيع الصحف على المنازل والمؤسسات وفق مسارات محددة، مما يساهم في إبقاء المدينة على اطلاع مستمر.</p>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <strong>أهم ما يميزها:</strong>
+                                    <span>عمل ميداني خفيف مثالي للمبتدئين للتعرف على الأحياء وتخطيطها.</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <strong>مستوى التفاعل:</strong>
+                                    <span>فردي - سريع</span>
+                                </div>
+                            </div>
+                            <div class="job-detail-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <strong>طبيعة العوائد:</strong>
+                                    <span>دخل ثابت ومضمون مقابل كل مسار توزيع يتم إتمامه بنجاح.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="job-tags">
+                            <span class="job-tag">خدمة يومية</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="organizations" class="section" style="background: var(--bg-secondary);">
+            <div class="container">
+                <h2 class="section-title">المنظمات <span class="highlight">الحكومية</span></h2>
+                <p class="section-subtitle">
+                    لكل جهة حكومية دور مختلف ومتكامل في بناء المدينة: أمن داخلي، استخبارات، حماية سيادية،
+                    وصناعة للرأي العام عبر منظومة مؤسساتية متقدمة.
+                </p>
+
+                <div class="org-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="police">وزارة الداخلية</button>
+                        <button class="tab-btn" data-tab="fbi">جهاز الأمن العام</button>
+                        <button class="tab-btn" data-tab="army">وزارة الدفاع</button>
+                        <button class="tab-btn" data-tab="media">وزارة الإعلام</button>
+                    </div>
+
+                    <div class="tab-content active" id="police">
+                        <div class="org-content">
+                            <div class="org-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="org-text">
+                                <span class="org-badge">منظمة رسمية</span>
+                                <h3>وزارة الداخلية</h3>
+                                <p>
+                                    وزارة الداخلية في Grand Legacy هي الجهة المسؤولة عن الأمن الداخلي في المدينة، وتعتمد <strong>نظاماً جديداً كلياً تم تطويره خصيصاً للخادم</strong>، وليس نظاماً تقليدياً أو منقولاً من أي خادم آخر. النظام <strong>تفاعلي بالكامل</strong>، حيث يوفر تجربة إدارية وميدانية متقدمة لجميع الرتب.
+                                </p>
+                                <p>
+                                    يمتلك القائد <strong>لوحة تحكم خاصة</strong> يستطيع من خلالها متابعة أداء جميع الأفراد، ومعرفة الأعمال والمهام التي أنجزها كل لاعب خلال الأسبوع، مما يسهل تقييم الأداء واتخاذ القرارات الإدارية بشفافية.
+                                </p>
+                                <p>
+                                    كما أن الوزارة لا تعتمد على مركز شرطة واحد فقط، وإنما تحتوي على <strong>المقر الرئيسي لوزارة الداخلية</strong>، بالإضافة إلى <strong>عدة مراكز شرطة ثانوية</strong> موزعة استراتيجياً داخل المدينة.
+                                </p>
+                                <p>
+                                    يتم العمل وفق نظام <strong>التوزيع الأسبوعي</strong>؛ حيث يتم إصدار خطة التوزيع كل يوم <strong>الجمعة</strong>، ليتم تحديد مركز الخدمة الخاص بكل فرد للأسبوع القادم. يصدر قرار التوزيع من قبل <strong>القائد أو النائب</strong>. ولكل مركز شرطة ثانوي <strong>مسؤول مركز</strong> يتم تعيينه أسبوعياً بالتزامن مع صدور التوزيعات، وقد يتغير المسؤول بحسب خطة القيادة وتوجهاتها الميدانية.
+                                </p>
+
+                                <div class="org-summary">
+                                    <div class="summary-card">
+                                        <h4>الاختصاص</h4>
+                                        <p>الأمن الداخلي، الاستجابة، الضبط، وحماية النظام العام.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>الهيكل</h4>
+                                        <p>مؤسسة أمنية متعددة الأقسام بإدارة مركزية متطورة.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>نوع المهام</h4>
+                                        <p>دوريات، مخالفات، مداهمات، استجابات، تأمين وحفظ النظام.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>مستوى الخطورة</h4>
+                                        <p>متوسط إلى عالٍ حسب نوع المهمة والوحدة المسؤولة.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="subdivision-title">الأقسام الرئيسية</h4>
+                                <div class="subdivision-grid">
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-traffic-light"></i>
+                                        <h4>قسم المرور</h4>
+                                        <p>تنظيم الطرق، متابعة الحوادث، ضبط المخالفات، وإدارة انسيابية الحركة داخل المدينة.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-people-carry-box"></i>
+                                        <h4>قسم القوات الخاصة</h4>
+                                        <p>وحدة عالية الجاهزية للتعامل مع الاقتحامات، المهام الخطرة، وعمليات الاعتقال الصعبة.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-building-shield"></i>
+                                        <h4>الإدارة العامة</h4>
+                                        <p>تشرف على التراتبية، القرارات، الموارد، تنظيم العمل، والمتابعة الإدارية للمؤسسة.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="rank-title">التسلسل الوظيفي</h4>
+                                <div class="rank-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>جندي</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>جندي أول</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>عريف</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>وكيل رقيب</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>رقيب</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>رئيس رقباء</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>ملازم</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>ملازم أول</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>نقيب</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>رائد</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>مقدم</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>عقيد</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>عميد</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>لواء</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>فريق</h4></div>
+                                    <div class="rank-card" style="text-align: center; padding: 12px;"><h4>فريق أول</h4></div>
+                                </div>
+
+                                <div class="relation-note" style="border-right-color: var(--info); background: rgba(33, 150, 243, 0.08);">
+                                    <strong style="color: var(--info);"><i class="fas fa-info-circle"></i> ملاحظة هامة:</strong>
+                                    منصب وزير الداخلية ليس مرتبطاً برتبة فريق أول، وإنما يتم تعيين الوزير بأعلى رتبة يمتلكها عند استلام المنصب، بغض النظر عن كونها فريق أول أو أقل.
+                                </div>
+
+                                <div class="relation-note">
+                                    <strong>العلاقة مع الجهات الأخرى:</strong>
+                                    وزارة الداخلية تمثل خط الأمن الداخلي الأول، وتتعاون مع جهاز الأمن العام في القضايا المعقدة،
+                                    ومع وزارة الدفاع عند وجود تهديدات استثنائية واسعة النطاق.
+                                </div>
+
+                                <ul class="org-features">
+                                    <li>هيكلة متطورة تضم المرور والقوات الخاصة والإدارة العامة</li>
+                                    <li>نظام دوريات واستجابة يغطي كامل المدينة</li>
+                                    <li>مطاردة المجرمين والتعامل مع البلاغات الفورية</li>
+                                    <li>مسار ترقيات واضح وصلاحيات متدرجة بحسب الرتبة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="fbi">
+                        <div class="org-content">
+                            <div class="org-icon">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <div class="org-text">
+                                <span class="org-badge">منظمة رسمية</span>
+                                <h3>جهاز الأمن العام</h3>
+                                <p>
+                                    جهاز الأمن العام هو مؤسسة متخصصة تقوم بمهام مشابهة بشكل كبير لأجهزة المخابرات. ويشمل دوره الأعمال الأمنية والاستخباراتية، مكافحة الجرائم المنظمة، جمع المعلومات الحساسة، وحماية أمن الدولة واستقرارها.
+                                </p>
+                                <p>
+                                    يعتمد الجهاز على التحليل والمتابعة الدقيقة، حيث يعمل على بناء الملفات الأمنية وتتبع الأنشطة المشبوهة، مع المحافظة على سرية تامة بشأن عملياته والأنظمة الداخلية لضمان أعلى مستويات الفعالية وحماية مصادر المعلومات.
+                                </p>
+
+                                <div class="org-summary">
+                                    <div class="summary-card">
+                                        <h4>الاختصاص</h4>
+                                        <p>جرائم منظمة، أمن قومي، فساد، وتحقيقات معقدة.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>الهيكل</h4>
+                                        <p>جهاز تحليلي سري قائم على الخلايا والوحدات الاستخباراتية.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>نوع المهام</h4>
+                                        <p>مراقبة، تحليل، تتبع، ملفات سرية، وعمليات نوعية.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>مستوى الخطورة</h4>
+                                        <p>عالٍ جدًا بسبب حساسية القضايا والخصوم المستهدفين.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="subdivision-title">الأقسام الرئيسية</h4>
+                                <div class="subdivision-grid">
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-magnifying-glass-chart"></i>
+                                        <h4>وحدة التحليل</h4>
+                                        <p>تفكك الأنماط الإجرامية وتربط بين الأدلة والمشتبه بهم والجهات ذات الصلة.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-eye"></i>
+                                        <h4>وحدة المراقبة</h4>
+                                        <p>ترصد التحركات، تتابع الأهداف، وتجمع المعلومات ضمن إطار سري ومنظم.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-scale-balanced"></i>
+                                        <h4>وحدة مكافحة الفساد</h4>
+                                        <p>تتابع الفساد العام والداخلي داخل المؤسسات وتبني ملفات قانونية محكمة.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="rank-title">التسلسل الإداري</h4>
+                                <div class="rank-grid">
+                                    <div class="rank-card">
+                                        <i class="fas fa-crown"></i>
+                                        <h4>المدير العام</h4>
+                                        <p>يقود المكتب استراتيجيًا ويرتبط مباشرة بوزارة العدل في القضايا الكبرى.</p>
+                                    </div>
+                                    <div class="rank-card">
+                                        <i class="fas fa-user-tie"></i>
+                                        <h4>رئيس قسم</h4>
+                                        <p>يشرف على وحدة متخصصة مثل التحليل أو المراقبة أو مكافحة الفساد.</p>
+                                    </div>
+                                    <div class="rank-card">
+                                        <i class="fas fa-user-check"></i>
+                                        <h4>محقق / محلل</h4>
+                                        <p>يبني الملفات ويراجع المعلومات ويشارك في التخطيط للعمليات السرية.</p>
+                                    </div>
+                                    <div class="rank-card">
+                                        <i class="fas fa-user-ninja"></i>
+                                        <h4>عنصر ميداني</h4>
+                                        <p>يتولى التنفيذ السري والرصد والمتابعة في الميدان.</p>
+                                    </div>
+                                </div>
+
+                                <div class="relation-note">
+                                    <strong>العلاقة مع الجهات الأخرى:</strong>
+                                    جهاز الأمن العام لا يحل محل وزارة الداخلية، بل يعمل على الملفات الحساسة والمعقدة والجرائم المنظمة،
+                                    ويتعاون مع وزارة الدفاع فقط عند وجود تهديد وطني كبير.
+                                </div>
+
+                                <ul class="org-features">
+                                    <li>يعمل تحت إشراف وزارة العدل</li>
+                                    <li>تحقيقات سرية ومراقبة احترافية للمشتبه بهم</li>
+                                    <li>مكافحة الجريمة المنظمة والفساد المؤسسي</li>
+                                    <li>تنفيذ عمليات نوعية ضمن أطر قانونية وصلاحيات محددة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="army">
+                        <div class="org-content">
+                            <div class="org-icon">
+                                <i class="fas fa-helmet-battle"></i>
+                            </div>
+                            <div class="org-text">
+                                <span class="org-badge">منظمة رسمية</span>
+                                <h3>وزارة الدفاع</h3>
+                                <p>
+                                    وزارة الدفاع هي مؤسسة سيادية مسؤولة عن حماية الدولة، المواقع الاستراتيجية، والحدود،
+                                    وتُستدعى عند الأزمات الكبرى أو التهديدات التي تتجاوز قدرات الأمن الداخلي التقليدي.
+                                </p>
+                                <p>
+                                    تم تصميمها لتمنح اللاعبين تجربة قائمة على الانضباط العسكري، الرتب، الجاهزية، والمشاركة
+                                    في الانتشار العسكري، العمليات الخاصة، والدعم الميداني واسع النطاق.
+                                </p>
+
+                                <div class="org-summary">
+                                    <div class="summary-card">
+                                        <h4>الاختصاص</h4>
+                                        <p>حماية سيادية، حدود، تدخل واسع، دعم استراتيجي.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>الهيكل</h4>
+                                        <p>قيادات، وحدات قتالية، دعم لوجستي، وانتشار ميداني منظم.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>نوع المهام</h4>
+                                        <p>تأمين، انتشار، حماية، مناورات، وتدخلات خاصة.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>مستوى الخطورة</h4>
+                                        <p>عالٍ في المهمات الخاصة والاستثنائية.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="subdivision-title">الأقسام الرئيسية</h4>
+                                <div class="subdivision-grid">
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-map-location-dot"></i>
+                                        <h4>وحدات الحماية والانتشار</h4>
+                                        <p>تؤمن المناطق الحساسة والمنشآت وتدير الانتشار الميداني في نطاق واسع.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-person-rifle"></i>
+                                        <h4>الوحدات القتالية</h4>
+                                        <p>تشكل القوة الأساسية في العمليات العسكرية والاستجابة للمخاطر الكبيرة.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-truck-fast"></i>
+                                        <h4>الدعم اللوجستي</h4>
+                                        <p>يوفر الإمداد، النقل، الجاهزية، واستمرارية العمليات الميدانية.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="rank-title">التسلسل الوظيفي</h4>
+                                <div class="info-box" style="text-align: center; padding: 25px;">
+                                    <i class="fas fa-clock" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+                                    <p style="margin: 0; font-size: 1.1rem;">
+                                        <strong>سيتم نشر الهيكل التنظيمي والتسلسل الوظيفي الكامل لوزارة الدفاع في تحديثات مستقبلية للموقع.</strong>
+                                    </p>
+                                </div>
+
+                                <div class="relation-note">
+                                    <strong>العلاقة مع الجهات الأخرى:</strong>
+                                    وزارة الدفاع لا تتدخل في التفاصيل اليومية للأمن الداخلي، لكنها تمثل القوة السيادية
+                                    عند الأزمات الكبرى أو التهديدات التي تستدعي تدخلًا أعلى مستوى.
+                                </div>
+
+                                <ul class="org-features">
+                                    <li>حماية المواقع الحساسة والحدود</li>
+                                    <li>مناورات عسكرية وتدريب تكتيكي متقدم</li>
+                                    <li>دعم استثنائي للداخلية عند الأزمات الكبرى</li>
+                                    <li>هيكل رتب واضح ومسار عسكري منظم</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="media">
+                        <div class="org-content">
+                            <div class="org-icon">
+                                <i class="fas fa-broadcast-tower"></i>
+                            </div>
+                            <div class="org-text">
+                                <span class="org-badge">منظمة رسمية</span>
+                                <h3>وزارة الإعلام</h3>
+                                <p>
+                                    وزارة الإعلام تمثل الذراع الإعلامية التي تنقل نبض المدينة وتوثق أحداثها
+                                    وتصنع أثرًا حقيقيًا في المجتمع. لا يقتصر دورها على الأخبار، بل يمتد إلى صناعة
+                                    المشهد الإعلامي، التأثير في الرأي العام، وإبراز الشخصيات والملفات المهمة.
+                                </p>
+                                <p>
+                                    توفر الوزارة مسارًا مختلفًا للاعبين الذين يفضلون العمل الصحفي والميداني وصناعة
+                                    المحتوى، مع إمكانيات للبث المباشر، المقابلات، التغطيات، والتقارير الخاصة.
+                                </p>
+
+                                <div class="org-summary">
+                                    <div class="summary-card">
+                                        <h4>الاختصاص</h4>
+                                        <p>تغطية، توثيق، إعلام رسمي، وصناعة رأي عام.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>الهيكل</h4>
+                                        <p>إدارة تحرير، مراسلون، بث، وإنتاج إعلامي منظم.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>نوع المهام</h4>
+                                        <p>مقابلات، بث مباشر، تقارير، وتغطية ميدانية.</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>مستوى الخطورة</h4>
+                                        <p>منخفض إلى متوسط وقد يرتفع في تغطية الأزمات.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="subdivision-title">الأقسام الرئيسية</h4>
+                                <div class="subdivision-grid">
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-newspaper"></i>
+                                        <h4>قسم التحرير</h4>
+                                        <p>يصيغ الأخبار والتقارير ويراجع المحتوى قبل نشره بشكل احترافي ومنظم.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-video"></i>
+                                        <h4>قسم البث والإنتاج</h4>
+                                        <p>يدير البث المباشر، التصوير، المقاطع الإعلامية، والنشرات المرئية.</p>
+                                    </div>
+                                    <div class="subdivision-card">
+                                        <i class="fas fa-microphone-lines"></i>
+                                        <h4>قسم التغطية الميدانية</h4>
+                                        <p>يتواجد في الأحداث المهمة وينقل الصورة المباشرة من أرض الواقع.</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="rank-title">التسلسل الوظيفي</h4>
+                                <div class="info-box" style="text-align: center; padding: 25px;">
+                                    <i class="fas fa-clock" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+                                    <p style="margin: 0; font-size: 1.1rem;">
+                                        <strong>سيتم الإعلان عن الهيكل الإداري والتسلسل الوظيفي الرسمي لوزارة الإعلام في تحديث مستقبلي.</strong>
+                                    </p>
+                                </div>
+
+                                <div class="relation-note">
+                                    <strong>العلاقة مع الجهات الأخرى:</strong>
+                                    وزارة الإعلام ليست جهة أمنية، لكنها تملك تأثيرًا كبيرًا من خلال كشف الأحداث،
+                                    إبراز الإنجازات، وتشكيل وعي المجتمع تجاه ما يجري داخل المدينة.
+                                </div>
+
+                                <ul class="org-features">
+                                    <li>تغطية شاملة للأحداث الرسمية والميدانية</li>
+                                    <li>بث مباشر وتقارير ومقابلات حصرية</li>
+                                    <li>صناعة رأي عام وتوثيق حياة المدينة</li>
+                                    <li>منظومة إعلامية تمنح العالم طابعًا حيًا ومتجددًا</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="laws" class="section" style="background: var(--bg-secondary);">
+            <div class="container">
+                <h2 class="section-title">القوانين <span class="highlight">والمصطلحات</span></h2>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 40px;">
+                    افهم القواعد قبل أن تبدأ رحلتك في عالم Grand Legacy
+                </p>
+
+                <div class="laws-grid">
+                    <div class="law-card">
+                        <h3 class="law-title">RP (Role Play)</h3>
+                        <p class="law-desc">تقمص شخصيتك في اللعبة بشكل كامل وواقعي.</p>
+                    </div>
+                    <div class="law-card">
+                        <h3 class="law-title">OOC</h3>
+                        <p class="law-desc">المحادثة خارج نطاق اللعبة وتستخدم في غير سياق الشخصية.</p>
+                    </div>
+                    <div class="law-card">
+                        <h3 class="law-title">IC</h3>
+                        <p class="law-desc">كل ما يتعلق بعالم اللعبة والأحداث الجارية داخل الشخصية.</p>
+                    </div>
+                    <div class="law-card">
+                        <h3 class="law-title">MG (Metagaming)</h3>
+                        <p class="law-desc">استخدام معلومات من خارج اللعبة داخل سياق الشخصية.</p>
+                    </div>
+                    <div class="law-card">
+                        <h3 class="law-title">DM (Deathmatch)</h3>
+                        <p class="law-desc">الاعتداء أو القتل دون مبرر منطقي داخل السياق التمثيلي.</p>
+                    </div>
+                    <div class="law-card">
+                        <h3 class="law-title">RK (Revenge Kill)</h3>
+                        <p class="law-desc">الرجوع للانتقام بشكل غير منطقي بعد الموت أو الخسارة.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="server-rules" class="section server-rules-section">
+            <div class="container">
+                <h2 class="section-title">قسم <span class="highlight">قوانين اللعبة</span></h2>
+                <p class="section-subtitle">النسخة الرسمية للقوانين بصيغة منظمة وواضحة.</p>
+
+                <div class="server-rules-wrap">
+                    <div class="rules-groups">
+                        <details class="rules-accordion" open>
+                            <summary><i class="fas fa-scale-balanced"></i> القوانين العامة</summary>
+                            <pre class="rules-pre">1.1 دخولك إلى الخادم يعني أنك قرأت ووافقت على جميع القوانين.
+1.1.1 الجهل بالقوانين لا يعفيك من العقوبة.
+
+1.2 الإدارة تملك الحق في تعديل العقوبات حسب الحالة.
+1.2.1 يمكن معاقبة أي مخالفة حتى لو لم تكن مذكورة بشكل صريح.
+
+1.3 المخالفات الكبيرة أو المتكررة قد تؤدي إلى حظر دائم.
+1.4 في حال ارتكاب عدة مخالفات، يتم جمع العقوبات.
+
+1.5 المخالفات قد تؤثر على جميع حساباتك.
+1.6 يمكن معاقبتك في خوادم أخرى تابعة للمشروع.
+
+1.7 قوانين الاحتيال تشمل جميع المنصات (الدردشة، السوشال ميديا).
+
+1.8 يحق للإدارة حظر حسابك بدون توضيح، والقرار النهائي لهم.</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-user"></i> حسابات اللعبة</summary>
+                            <pre class="rules-pre">2.1 الإدارة غير مسؤولة عن سرقة أو مشاركة الحساب.
+
+2.2 الحد الأقصى 3 حسابات للشخص
+العقوبة: حظر 14 يوم أو دائم
+
+2.3 يمنع مشاركة الحساب مع أكثر من 3 أشخاص
+العقوبة: حظر دائم
+
+2.4 يمنع بيع/شراء/تبادل الحسابات
+العقوبة: حظر دائم
+
+2.5 لا يجوز امتلاك أكثر من شخصيتين داخل الفصائل
+2.5.1 يمنع القيادة من حسابين
+
+2.6 يمنع الاحتيال في نظام الإحالة
+العقوبة: حظر + سحب المكافآت
+
+2.7 يمنع إنشاء حساب لشخص آخر
+العقوبة: حظر الحساب + معاقبة باقي الحسابات</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-house"></i> الممتلكات</summary>
+                            <pre class="rules-pre">3.1 يمنع امتلاك ممتلكات بدون نشاط فعلي
+العقوبة: مصادرة + حظر 14 يوم
+
+3.1.3 يجب اللعب 5 ساعات خلال 7 أيام للحفاظ على الممتلكات
+
+3.2 يمنع توزيع الممتلكات على عدة حسابات
+
+3.3 يمنع الاحتيال بالعملة داخل اللعبة
+العقوبة: حظر دائم
+
+3.4 يمنع البيع مقابل أموال حقيقية
+العقوبة: حظر دائم
+
+3.5 يمنع التحايل على نظام تحويل الأموال
+
+3.6 يمنع استخدام التجارة فقط لنقل الأموال
+
+3.7 يمنع نقل ممتلكات من حساب معاقب
+
+3.8 يمنع التعامل مع لاعبين محظورين
+
+3.9 يمنع احتكار الشركات
+
+3.10 يمنع استغلال الأكواد الترويجية عبر عدة حسابات
+
+3.11 يمنع اللعب بأكثر من حساب بنفس الوقت</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-gamepad"></i> قواعد اللعب (RP)</summary>
+                            <pre class="rules-pre">4.1 القتل أو الضرر بدون سبب (DM) ممنوع
+العقوبة: سجن
+
+4.2 يمنع القتال في المناطق الآمنة (Green Zone)
+
+4.3 يمنع القتل بالمركبة (DB)
+
+4.4 يمنع القتل عند نقاط الظهور (SK)
+
+4.5 يمنع قتل أعضاء فريقك (TK)
+
+4.6 يمنع التصرف بشكل غير واقعي (PG)
+
+4.7 يمنع الرجوع للانتقام بعد الموت (RK)
+
+4.8 يمنع السلوك غير الواقعي (NRP)
+
+4.9 يمنع استخدام معلومات خارج RP (MetaGaming)
+
+4.10 يمنع الهروب من مواقف RP
+
+4.11 يمنع استخدام الإسعافات أثناء القتال
+
+4.12 يمنع استفزاز الجهات الحكومية</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-comments"></i> الدردشة</summary>
+                            <pre class="rules-pre">5.1 الدردشة داخل اللعبة هي IC فقط
+
+5.2 يمنع إهانة الآخرين أو أقاربهم
+
+5.3 الإهانة المباشرة للأقارب
+العقوبة: حظر
+
+5.4 يمنع السبام
+
+5.5 يمنع المشاكل خارج اللعبة
+
+5.6 يمنع استخدام Caps بشكل مزعج
+
+5.7 يمنع الكتابة بـ "عربيزي"
+
+5.8 يمنع الإعلانات
+
+5.9 دردشة VIP خارج RP لكنها تخضع للقوانين
+
+5.10 يمنع الإزعاج الصوتي</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-id-card"></i> الأسماء</summary>
+                            <pre class="rules-pre">6.1 يجب أن يكون الاسم: Name_Surname
+
+6.2 الاسم يجب أن يكون لاتيني وواقعي
+
+6.3 يمنع الرموز والأرقام في الاسم
+
+6.4 يمنع انتحال شخصية مسؤول
+
+6.5 يمنع أسماء سياسية أو إرهابية</pre>
+                        </details>
+
+                        <details class="rules-accordion">
+                            <summary><i class="fas fa-triangle-exclamation"></i> قواعد إضافية</summary>
+                            <pre class="rules-pre">7.1 يمنع عرقلة عمل الإدارة
+
+7.2 يمنع إهانة الإدارة
+
+7.3 يمنع خداع الإدارة
+
+7.4 يمنع استخدام برامج غش
+
+7.5 يمنع استغلال الأخطاء (Bug Abuse)
+
+7.6 يمنع الاحتيال
+
+7.7 يمنع التبليغ الكيدي
+
+7.8 يمنع التعامل مع المحظورين
+
+7.9 يمنع انتحال الإدارة
+
+7.10 يمنع الرموز المحظورة
+
+7.11 يمنع التدخل في RP
+
+7.12 يمنع نشر معلومات الإدارة
+
+7.15 يمنع التهديدات الواقعية
+
+7.16 يمنع العنصرية والطائفية
+
+7.17 يمنع التهرب من العقوبة
+
+7.18 يمنع الترويج لخوادم أخرى</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="join" class="section join" style="background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(10,10,10,0.98)); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(212,175,55,0.03) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="container" style="position: relative; z-index: 2;">
+                <div style="max-width: 950px; margin: 0 auto; text-align: center;">
+                    <h2 class="section-title">جاهز <span class="highlight">للمغامرة</span>؟</h2>
+                    <p class="hero-description" style="max-width: 700px; margin: 0 auto 2rem;">
+                        عالم Grand Legacy ليس مجرد لعبة، بل هو مجتمع متكامل. انضم إلينا الآن عبر الديسكورد لتتعرف على أصدقاء جدد، وتواكب أحدث الفعاليات، وتبدأ في كتابة قصتك الخاصة.
+                    </p>
+
+                    <div class="join-features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; margin: 45px 0; text-align: right;">
+                        <div class="join-feature-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--primary-color);"></div>
+                            <i class="fas fa-users" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 18px;"></i>
+                            <h4 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 800;">مجتمع احترافي</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.7;">بيئة لعب عادلة تجمع أفضل لاعبي الرول بلاي، خالية من التجاوزات لضمان تجربة غامرة ومستقرة للجميع دون استثناء.</p>
+                        </div>
+                        <div class="join-feature-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--primary-color);"></div>
+                            <i class="fas fa-rocket" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 18px;"></i>
+                            <h4 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 800;">تحديثات مستمرة</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.7;">فريق تطوير مكرس لإضافة أنظمة جديدة ومبتكرة بشكل دوري، مما يجعل اللعبة متجددة ومليئة بالفرص والتحديات.</p>
+                        </div>
+                        <div class="join-feature-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--primary-color);"></div>
+                            <i class="fas fa-headset" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 18px;"></i>
+                            <h4 style="font-size: 1.3rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 800;">دعم على مدار الساعة</h4>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.7;">سواء كنت تبحث عن استفسار أو واجهت مشكلة، فريقنا الإداري متواجد دائماً لتقديم الدعم الفني بكل احترافية.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <a href="https://discord.com/invite/KepC53zxzH" target="_blank" class="btn btn-discord" style="padding: 16px 45px; font-size: 1.25rem; border-radius: 30px; box-shadow: 0 10px 25px rgba(88, 101, 242, 0.25); display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease;">
+                            <i class="fab fa-discord" style="font-size: 1.5rem;"></i>
+                            <span>انضم إلى الديسكورد الآن</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .join-feature-card:hover {
+                    transform: translateY(-8px);
+                    border-color: rgba(212,175,55,0.4) !important;
+                    background: rgba(212,175,55,0.06) !important;
+                    box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+                }
+                .btn-discord:hover {
+                    transform: translateY(-4px) !important;
+                    box-shadow: 0 15px 30px rgba(88, 101, 242, 0.4) !important;
+                }
+            </style>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Grand Legacy</h4>
+                    <p style="color: var(--text-secondary); margin-top: 20px;">
+                        عالم افتراضي مفتوح يتيح لك تجربة حياة ثانية بكل تفاصيلها. اختر مسارك وابنِ إرثك.
+                    </p>
+                    <div class="social-links">
+                        <a href="https://discord.com/invite/KepC53zxzH" target="_blank" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#features">المميزات</a></li>
+                        <li><a href="#jobs">الوظائف العامة</a></li>
+                        <li><a href="companies.html">الشركات</a></li>
+                        <li><a href="#organizations">المنظمات الحكومية</a></li>
+                        <li><a href="#laws">القوانين</a></li>
+                        <li><a href="#server-rules">قوانين اللعبة</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>الدعم</h4>
+                    <ul class="footer-links">
+                        <li><a href="player-guide.html#faq">الأسئلة الشائعة</a></li>
+                        <li><a href="player-guide.html">دليل اللاعب</a></li>
+                        <li><a href="reports.html">الإبلاغ عن مشكلة</a></li>
+                        <li><a href="track-report.html">تتبع بلاغ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; <span id="current-year">2023</span> Grand Legacy. جميع الحقوق محفوظة.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">
+                    هذا الموقع غير رسمي ويتم إنشاؤه لأغراض العرض.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoImg = document.getElementById('site-logo');
+            if (logoImg) {
+                logoImg.onload = function() {
+                    console.log('✅ تم تحميل شعار الموقع بنجاح');
+                };
+                logoImg.onerror = function() {
+                    console.error('❌ خطأ في تحميل الشعار، تأكد من المسار: photos/logo.png');
+                    logoImg.style.display = 'none';
+                    const fallbackIcon = document.createElement('i');
+                    fallbackIcon.className = 'fas fa-crow';
+                    fallbackIcon.style.fontSize = '2.2rem';
+                    fallbackIcon.style.color = 'var(--primary-color)';
+                    logoImg.parentNode.insertBefore(fallbackIcon, logoImg);
+                };
+            }
+        });
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('load', function() {
+            setTimeout(hideLoadingScreen, 1000);
+        });
+        setTimeout(hideLoadingScreen, 2600);
+
+        const menuToggle = document.getElementById('menuToggle');
+        const shortcutDrawer = document.getElementById('shortcutDrawer');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const drawerClose = document.getElementById('drawerClose');
+
+        function openShortcutDrawer() {
+            document.body.classList.add('drawer-open');
+            shortcutDrawer.setAttribute('aria-hidden', 'false');
+            menuToggle.setAttribute('aria-expanded', 'true');
+            sidebarOverlay.hidden = false;
+        }
+
+        function closeShortcutDrawer() {
+            document.body.classList.remove('drawer-open');
+            shortcutDrawer.setAttribute('aria-hidden', 'true');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            sidebarOverlay.hidden = true;
+        }
+
+        menuToggle.addEventListener('click', function() {
+            if (document.body.classList.contains('drawer-open')) {
+                closeShortcutDrawer();
+            } else {
+                openShortcutDrawer();
+            }
+        });
+
+        drawerClose.addEventListener('click', closeShortcutDrawer);
+        sidebarOverlay.addEventListener('click', closeShortcutDrawer);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeShortcutDrawer();
+            }
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', closeShortcutDrawer);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                this.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        document.querySelectorAll('.footer-links a[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('هذا المحتوى قيد التطوير وسيكون متاحاً قريباً!');
+            });
+        });
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تتبع البلاغ - Grand Legacy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d4af37;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --card-bg: #1b1b1b;
+            --text-primary: #fff;
+            --text-secondary: #c8c8c8;
+            --danger: #ff6b6b;
+            --success: #55c57a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Cairo", sans-serif;
+            color: var(--text-primary);
+            background:
+                radial-gradient(circle at 12% 20%, rgba(212, 175, 55, 0.12), transparent 38%),
+                linear-gradient(155deg, #070707 0%, #111111 45%, #151515 100%);
+            min-height: 100vh;
+        }
+        .container { width: min(980px, 92%); margin: 0 auto; }
+        .top { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+        .brand { color: var(--primary-color); font-weight: 800; }
+        .back { color: var(--text-primary); text-decoration: none; border: 1px solid rgba(212,175,55,0.25); border-radius: 999px; padding: 8px 12px; }
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-right: 3px solid var(--primary-color);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        h1 { color: var(--primary-color); margin-bottom: 12px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; }
+        input {
+            width: 100%; background: var(--card-bg); color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 11px 12px;
+            font-family: inherit;
+        }
+        button {
+            border: none; background: var(--primary-color); color: #000; border-radius: 10px;
+            padding: 11px 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+        }
+        .hint { color: var(--text-secondary); margin-top: 8px; font-size: 0.92rem; }
+        .status-pill {
+            display: inline-block; padding: 6px 12px; border-radius: 999px; font-weight: 700; margin-bottom: 10px;
+            background: rgba(212,175,55,0.15); color: var(--primary-color); border: 1px solid rgba(212,175,55,0.3);
+        }
+        .error { color: #ffd7d7; background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.35); border-radius: 10px; padding: 10px; display: none; }
+        .timeline { list-style: none; display: grid; gap: 10px; margin-top: 12px; }
+        .timeline li { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; color: var(--text-secondary); }
+        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <div class="top">
+            <div class="brand"><i class="fas fa-magnifying-glass"></i> تتبع البلاغ</div>
+            <a class="back" href="index.html">العودة للرئيسية</a>
+        </div>
+
+        <section class="card">
+            <h1>تتبع الحالة</h1>
+            <div class="grid">
+                <input id="ticketId" type="text" placeholder="رقم البلاغ: GL-YYYYMMDD-XXXX">
+                <input id="discordId" type="text" placeholder="Discord ID">
+                <button id="trackBtn" type="button">تتبع</button>
+            </div>
+            <p class="hint">أدخل نفس Discord ID الذي استخدمته عند تقديم البلاغ.</p>
+            <div id="errorBox" class="error"></div>
+        </section>
+
+        <section id="resultCard" class="card" style="display:none;">
+            <div id="statusPill" class="status-pill"></div>
+            <p id="ticketText"></p>
+            <p id="typeText"></p>
+            <p id="noteText"></p>
+            <ul id="updatesList" class="timeline"></ul>
+        </section>
+    </main>
+
+    <script src="notifications.js"></script>
+    <script>
+        (function () {
+            const workerUrl = "https://gl-reports-worker0.karargx06.workers.dev";
+            const ticketInput = document.getElementById("ticketId");
+            const discordInput = document.getElementById("discordId");
+            const trackBtn = document.getElementById("trackBtn");
+            const errorBox = document.getElementById("errorBox");
+            const resultCard = document.getElementById("resultCard");
+            const statusPill = document.getElementById("statusPill");
+            const ticketText = document.getElementById("ticketText");
+            const typeText = document.getElementById("typeText");
+            const noteText = document.getElementById("noteText");
+            const updatesList = document.getElementById("updatesList");
+
+            try {
+                const lastTicket = localStorage.getItem("lastReportTicketId");
+                const lastDiscord = localStorage.getItem("lastReportDiscordId");
+                if (lastTicket) ticketInput.value = lastTicket;
+                if (lastDiscord) discordInput.value = lastDiscord;
+            } catch (e) {}
+
+            function showError(msg) {
+                errorBox.textContent = msg;
+                errorBox.style.display = "block";
+            }
+
+            function clearError() {
+                errorBox.style.display = "none";
+            }
+
+            trackBtn.addEventListener("click", async function () {
+                clearError();
+                resultCard.style.display = "none";
+                updatesList.innerHTML = "";
+
+                const ticketId = ticketInput.value.trim();
+                const discordId = discordInput.value.trim();
+                if (!ticketId || !discordId) {
+                    showError("يرجى إدخال رقم البلاغ و Discord ID.");
+                    return;
+                }
+
+                try {
+                    const resp = await fetch(workerUrl + "/track", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ticketId, discordId })
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok || !data.ok) {
+                        showError("لم يتم العثور على البلاغ أو البيانات غير مطابقة.");
+                        return;
+                    }
+
+                    const report = data.report || {};
+                    statusPill.textContent = report.status_label || report.status || "غير معروف";
+                    ticketText.textContent = "رقم البلاغ: " + (report.ticket_id || ticketId);
+                    typeText.textContent = "نوع البلاغ: " + (report.report_type || "-");
+                    noteText.textContent = "ملاحظة الإدارة: " + (report.admin_note || "لا يوجد");
+
+                    (data.updates || []).forEach(function (u) {
+                        const li = document.createElement("li");
+                        li.textContent = (u.created_at || "") + " - " + (u.new_status || "") + (u.note ? " - " + u.note : "");
+                        updatesList.appendChild(li);
+                    });
+
+                    resultCard.style.display = "block";
+                } catch (err) {
+                    showError("تعذر الاتصال بخدمة التتبع.");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

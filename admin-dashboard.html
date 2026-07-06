@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة الموحدة - Grand Legacy</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d8b75d;
+      --gold-strong: #f1cf74;
+      --gold-dark: #9f7419;
+      --red: #e5484d;
+      --green: #4fb477;
+      --blue: #62a8ff;
+      --bg: #070707;
+      --surface: #101012;
+      --surface-2: #171719;
+      --surface-3: #202024;
+      --text: #f7f1df;
+      --muted: #bfb8aa;
+      --faint: #827c72;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-gold: rgba(216, 183, 93, 0.28);
+      --shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
+      --radius: 8px;
+      --sidebar: 292px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        linear-gradient(130deg, rgba(216, 183, 93, 0.09), transparent 28%),
+        linear-gradient(230deg, rgba(229, 72, 77, 0.09), transparent 30%),
+        linear-gradient(180deg, #050505, #0d0d0f 44%, #070707);
+      color: var(--text);
+      font-family: "Cairo", Arial, sans-serif;
+      line-height: 1.7;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.08));
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--gold-strong);
+      outline-offset: 3px;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 18px;
+      border-left: 1px solid var(--line);
+      background: rgba(8, 8, 9, 0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line-gold);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(216, 183, 93, 0.13), rgba(255, 255, 255, 0.03));
+    }
+
+    .brand img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 6px;
+      filter: drop-shadow(0 0 14px rgba(216, 183, 93, 0.38));
+    }
+
+    .brand h1 {
+      color: var(--gold-strong);
+      font-size: 1.08rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .admin-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 14px 0;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 14px rgba(229, 72, 77, 0.5);
+    }
+
+    .status-dot.ready {
+      background: var(--green);
+      box-shadow: 0 0 14px rgba(79, 180, 119, 0.5);
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .nav-title {
+      margin: 18px 4px 6px;
+      color: var(--faint);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .nav-btn,
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      text-decoration: none;
+      text-align: right;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-btn i,
+    .side-link i {
+      width: 20px;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active,
+    .side-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(216, 183, 93, 0.25);
+      background: rgba(216, 183, 93, 0.09);
+      color: var(--gold-strong);
+    }
+
+    .main {
+      min-width: 0;
+      padding: 22px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: -22px -22px 22px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 7, 7, 0.78);
+      backdrop-filter: blur(16px);
+    }
+
+    .page-kicker {
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .page-title {
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 1.55rem;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-weight: 800;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(216, 183, 93, 0.32);
+      background: rgba(216, 183, 93, 0.09);
+    }
+
+    .btn-primary {
+      border-color: rgba(241, 207, 116, 0.48);
+      background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+      color: #0b0b0b;
+      box-shadow: 0 16px 32px rgba(216, 183, 93, 0.16);
+    }
+
+    .btn-danger {
+      border-color: rgba(229, 72, 77, 0.35);
+      background: rgba(229, 72, 77, 0.11);
+      color: #ffb1b3;
+    }
+
+    .btn-small {
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 0.88rem;
+    }
+
+    .view {
+      display: none;
+      animation: fadeUp 0.28s ease both;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .content-grid {
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.8fr);
+      align-items: start;
+    }
+
+    .panel,
+    .stat-tile {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+        rgba(16, 16, 18, 0.82);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .panel-title {
+      color: var(--text);
+      font-size: 1.04rem;
+      font-weight: 900;
+    }
+
+    .panel-subtitle {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .stat-tile {
+      position: relative;
+      overflow: hidden;
+      padding: 16px;
+      min-height: 124px;
+    }
+
+    .stat-tile::before {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .stat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(216, 183, 93, 0.25);
+      border-radius: var(--radius);
+      background: rgba(216, 183, 93, 0.1);
+      color: var(--gold-strong);
+      font-size: 1.1rem;
+    }
+
+    .stat-value {
+      color: var(--text);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-label {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--text);
+      padding: 10px 11px;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(216, 183, 93, 0.45);
+      background: rgba(216, 183, 93, 0.055);
+    }
+
+    select option {
+      background: #141416;
+      color: var(--text);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+      font-size: 0.92rem;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--gold-strong);
+      font-size: 0.82rem;
+      font-weight: 900;
+      background: rgba(216, 183, 93, 0.055);
+    }
+
+    tbody tr {
+      transition: background 0.18s ease;
+    }
+
+    tbody tr:hover,
+    tbody tr.selected {
+      background: rgba(216, 183, 93, 0.075);
+    }
+
+    .empty-state,
+    .notice {
+      padding: 14px;
+      border: 1px dashed rgba(216, 183, 93, 0.28);
+      border-radius: var(--radius);
+      background: rgba(216, 183, 93, 0.055);
+      color: var(--muted);
+    }
+
+    .notice.error {
+      border-color: rgba(229, 72, 77, 0.35);
+      background: rgba(229, 72, 77, 0.09);
+      color: #ffc5c7;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .chip.new,
+    .chip.announcement {
+      border-color: rgba(98, 168, 255, 0.35);
+      background: rgba(98, 168, 255, 0.1);
+      color: #aad1ff;
+    }
+
+    .chip.in_review,
+    .chip.update {
+      border-color: rgba(216, 183, 93, 0.35);
+      background: rgba(216, 183, 93, 0.11);
+      color: var(--gold-strong);
+    }
+
+    .chip.resolved,
+    .chip.active,
+    .chip.event {
+      border-color: rgba(79, 180, 119, 0.35);
+      background: rgba(79, 180, 119, 0.11);
+      color: #9ee2b8;
+    }
+
+    .chip.rejected,
+    .chip.inactive,
+    .chip.urgent,
+    .chip.maintenance {
+      border-color: rgba(229, 72, 77, 0.35);
+      background: rgba(229, 72, 77, 0.11);
+      color: #ffb1b3;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .detail-row {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .detail-label {
+      color: var(--faint);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .detail-value {
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .list-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .list-item {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.028);
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .item-title {
+      color: var(--text);
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .item-meta,
+    .item-message {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .split-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 22px;
+      bottom: 22px;
+      z-index: 50;
+      width: min(420px, calc(100% - 44px));
+      padding: 13px 14px;
+      border: 1px solid var(--line-gold);
+      border-radius: var(--radius);
+      background: rgba(16, 16, 18, 0.94);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast.error {
+      border-color: rgba(229, 72, 77, 0.42);
+      color: #ffc5c7;
+    }
+
+    .route-warning {
+      display: none;
+      margin-bottom: 14px;
+    }
+
+    .route-warning.show {
+      display: block;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .danger-text {
+      color: #ffb1b3;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-left: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .main {
+        padding: 16px;
+      }
+
+      .topbar {
+        position: relative;
+        margin: -16px -16px 16px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .top-actions {
+        justify-content: stretch;
+      }
+
+      .top-actions .btn {
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .brand {
+        align-items: flex-start;
+      }
+
+      .nav-group,
+      .stats-grid,
+      .form-grid,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 1.28rem;
+      }
+
+      .panel-header,
+      .item-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="photos/logo.png" alt="Grand Legacy">
+        <div>
+          <h1>Grand Legacy</h1>
+          <p>لوحة الإدارة الموحدة</p>
+        </div>
+      </div>
+
+      <div class="admin-status">
+        <span id="connectionLabel">بانتظار التوكن</span>
+        <span class="status-dot" id="connectionDot"></span>
+      </div>
+
+      <div class="nav-title">الإدارة</div>
+      <nav class="nav-group" aria-label="أقسام لوحة الإدارة">
+        <button class="nav-btn active" type="button" data-view="overview">
+          <i class="fas fa-chart-line"></i>
+          الرئيسية
+        </button>
+        <button class="nav-btn" type="button" data-view="reports">
+          <i class="fas fa-clipboard-list"></i>
+          البلاغات
+        </button>
+        <button class="nav-btn" type="button" data-view="notifications">
+          <i class="fas fa-bell"></i>
+          الإشعارات
+        </button>
+        <button class="nav-btn" type="button" data-view="settings">
+          <i class="fas fa-sliders"></i>
+          الإعدادات
+        </button>
+      </nav>
+
+      <div class="nav-title">روابط سريعة</div>
+      <div class="nav-group">
+        <a class="side-link" href="index.html">
+          <i class="fas fa-house"></i>
+          الرئيسية
+        </a>
+        <a class="side-link" href="reports.html">
+          <i class="fas fa-file-signature"></i>
+          نموذج البلاغ
+        </a>
+        <a class="side-link" href="admin-reports.html">
+          <i class="fas fa-table"></i>
+          لوحة البلاغات القديمة
+        </a>
+        <a class="side-link" href="admin-notifications.html">
+          <i class="fas fa-bell"></i>
+          لوحة الإشعارات القديمة
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-kicker" id="pageKicker">نظرة عامة</div>
+          <h2 class="page-title" id="pageTitle">متابعة البلاغات والإشعارات من مكان واحد</h2>
+        </div>
+        <div class="top-actions">
+          <button class="btn" type="button" id="refreshAllBtn">
+            <i class="fas fa-rotate"></i>
+            تحديث الكل
+          </button>
+          <button class="btn btn-primary" type="button" data-view-shortcut="settings">
+            <i class="fas fa-key"></i>
+            التوكن
+          </button>
+        </div>
+      </header>
+
+      <section class="view active" id="overviewView">
+        <div class="grid stats-grid">
+          <div class="stat-tile">
+            <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+            <div class="stat-value" id="statReportsTotal">0</div>
+            <div class="stat-label">إجمالي البلاغات</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon"><i class="fas fa-circle-exclamation"></i></div>
+            <div class="stat-value" id="statReportsNew">0</div>
+            <div class="stat-label">بلاغات جديدة</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon"><i class="fas fa-magnifying-glass"></i></div>
+            <div class="stat-value" id="statReportsReview">0</div>
+            <div class="stat-label">قيد المراجعة</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon"><i class="fas fa-bell"></i></div>
+            <div class="stat-value" id="statActiveNotifications">0</div>
+            <div class="stat-label">إشعارات نشطة</div>
+          </div>
+        </div>
+
+        <div class="grid content-grid" style="margin-top:16px;">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">آخر البلاغات</h3>
+                <p class="panel-subtitle">أحدث البلاغات حسب آخر تحديث</p>
+              </div>
+              <button class="btn btn-small" type="button" data-view-shortcut="reports">
+                <i class="fas fa-arrow-left"></i>
+                فتح البلاغات
+              </button>
+            </div>
+            <div class="panel-body">
+              <div class="list-stack" id="recentReportsList"></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">الإشعارات الحالية</h3>
+                <p class="panel-subtitle">الإشعارات المتاحة للظهور للاعبين</p>
+              </div>
+              <button class="btn btn-small" type="button" data-view-shortcut="notifications">
+                <i class="fas fa-arrow-left"></i>
+                فتح الإشعارات
+              </button>
+            </div>
+            <div class="panel-body">
+              <div class="notice error route-warning" id="overviewNotificationWarning"></div>
+              <div class="list-stack" id="recentNotificationsList"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="reportsView">
+        <div class="grid content-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">إدارة البلاغات</h3>
+                <p class="panel-subtitle">فلترة، اختيار، وتحديث حالة البلاغ</p>
+              </div>
+              <button class="btn btn-small" type="button" id="loadReportsBtn">
+                <i class="fas fa-rotate"></i>
+                تحديث
+              </button>
+            </div>
+            <div class="panel-body">
+              <div class="toolbar">
+                <div class="field">
+                  <label for="reportStatusFilter">الحالة</label>
+                  <select id="reportStatusFilter">
+                    <option value="">كل الحالات</option>
+                    <option value="new">جديد</option>
+                    <option value="in_review">قيد المراجعة</option>
+                    <option value="resolved">تم الحل</option>
+                    <option value="rejected">مرفوض</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="reportSearch">بحث</label>
+                  <input id="reportSearch" type="search" placeholder="Ticket / الاسم / النوع / Discord ID">
+                </div>
+                <button class="btn" type="button" id="clearReportFiltersBtn">
+                  <i class="fas fa-filter-circle-xmark"></i>
+                  تصفية
+                </button>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ticket</th>
+                      <th>الاسم</th>
+                      <th>Discord ID</th>
+                      <th>النوع</th>
+                      <th>الحالة</th>
+                      <th>آخر تحديث</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">تفاصيل وتحديث</h3>
+                <p class="panel-subtitle">اختر بلاغًا من الجدول</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="empty-state" id="reportEmptyState">لم يتم اختيار بلاغ بعد.</div>
+              <div id="reportDetailPanel" class="hidden">
+                <div class="detail-list" id="reportDetails"></div>
+                <div class="form-grid" style="margin-top:14px;">
+                  <div class="field">
+                    <label for="updateStatus">الحالة الجديدة</label>
+                    <select id="updateStatus">
+                      <option value="new">جديد</option>
+                      <option value="in_review">قيد المراجعة</option>
+                      <option value="resolved">تم الحل</option>
+                      <option value="rejected">مرفوض</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="updatedBy">بواسطة</label>
+                    <input id="updatedBy" type="text" placeholder="admin">
+                  </div>
+                  <div class="field full">
+                    <label for="adminNote">ملاحظة الإدارة</label>
+                    <textarea id="adminNote" placeholder="سبب القرار أو ملاحظة مختصرة تظهر في التتبع"></textarea>
+                  </div>
+                </div>
+                <div class="split-actions">
+                  <button class="btn btn-primary" type="button" id="updateReportBtn">
+                    <i class="fas fa-floppy-disk"></i>
+                    حفظ التحديث
+                  </button>
+                  <button class="btn" type="button" id="copyTicketBtn">
+                    <i class="fas fa-copy"></i>
+                    نسخ رقم البلاغ
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="notificationsView">
+        <div class="notice error route-warning" id="notificationRouteWarning"></div>
+        <div class="grid content-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">إنشاء إشعار</h3>
+                <p class="panel-subtitle">يظهر في صفحات الموقع المربوطة بملف notifications.js</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="notificationTitle">العنوان</label>
+                  <input id="notificationTitle" type="text" placeholder="عنوان الإشعار">
+                </div>
+                <div class="field">
+                  <label for="notificationType">النوع</label>
+                  <select id="notificationType">
+                    <option value="announcement">عام</option>
+                    <option value="urgent">عاجل</option>
+                    <option value="maintenance">صيانة</option>
+                    <option value="update">تحديث</option>
+                    <option value="event">فعالية</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="notificationPriority">الأولوية</label>
+                  <input id="notificationPriority" type="number" min="1" max="100" value="50">
+                </div>
+                <div class="field">
+                  <label for="notificationCta">نص الزر</label>
+                  <input id="notificationCta" type="text" placeholder="اختياري">
+                </div>
+                <div class="field">
+                  <label for="notificationStart">بداية الظهور</label>
+                  <input id="notificationStart" type="datetime-local">
+                </div>
+                <div class="field">
+                  <label for="notificationEnd">نهاية الظهور</label>
+                  <input id="notificationEnd" type="datetime-local">
+                </div>
+                <div class="field full">
+                  <label for="notificationLink">الرابط</label>
+                  <input id="notificationLink" type="url" placeholder="https://...">
+                </div>
+                <div class="field full">
+                  <label for="notificationMessage">النص</label>
+                  <textarea id="notificationMessage" placeholder="نص الإشعار"></textarea>
+                </div>
+              </div>
+              <div class="split-actions">
+                <button class="btn btn-primary" type="button" id="createNotificationBtn">
+                  <i class="fas fa-paper-plane"></i>
+                  نشر الإشعار
+                </button>
+                <button class="btn" type="button" id="clearNotificationFormBtn">
+                  <i class="fas fa-eraser"></i>
+                  مسح الحقول
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">قائمة الإشعارات</h3>
+                <p class="panel-subtitle">تفعيل، إيقاف، أو حذف</p>
+              </div>
+              <button class="btn btn-small" type="button" id="loadNotificationsBtn">
+                <i class="fas fa-rotate"></i>
+                تحديث
+              </button>
+            </div>
+            <div class="panel-body">
+              <div class="list-stack" id="notificationsList"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="grid content-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">إعداد الاتصال</h3>
+                <p class="panel-subtitle">التوكن محفوظ محليًا في المتصفح فقط</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="apiBase">رابط Cloudflare Worker</label>
+                  <input id="apiBase" type="url">
+                </div>
+                <div class="field full">
+                  <label for="adminToken">ADMIN_TOKEN</label>
+                  <input id="adminToken" type="password" placeholder="أدخل التوكن">
+                </div>
+              </div>
+              <div class="split-actions">
+                <button class="btn btn-primary" type="button" id="saveSettingsBtn">
+                  <i class="fas fa-floppy-disk"></i>
+                  حفظ الإعدادات
+                </button>
+                <button class="btn" type="button" id="testConnectionBtn">
+                  <i class="fas fa-plug-circle-check"></i>
+                  اختبار الاتصال
+                </button>
+                <button class="btn btn-danger" type="button" id="logoutBtn">
+                  <i class="fas fa-right-from-bracket"></i>
+                  حذف التوكن
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 class="panel-title">حالة الـ API</h3>
+                <p class="panel-subtitle">نتائج آخر اختبار</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="detail-list" id="apiStatusList"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      const DEFAULT_API = "https://gl-reports-worker0.karargx06.workers.dev";
+      const STORE = {
+        apiBase: "gl_admin_api_base",
+        tokenA: "glAdminToken",
+        tokenB: "gl_admin_token"
+      };
+
+      const state = {
+        view: "overview",
+        reports: [],
+        notifications: [],
+        selectedReport: null,
+        notificationsRouteReady: true,
+        loading: false
+      };
+
+      const viewMeta = {
+        overview: {
+          kicker: "نظرة عامة",
+          title: "متابعة البلاغات والإشعارات من مكان واحد"
+        },
+        reports: {
+          kicker: "إدارة البلاغات",
+          title: "مراجعة البلاغات وتحديث حالاتها"
+        },
+        notifications: {
+          kicker: "إدارة الإشعارات",
+          title: "إنشاء وتنظيم رسائل الموقع"
+        },
+        settings: {
+          kicker: "الإعدادات",
+          title: "الاتصال والتوكن"
+        }
+      };
+
+      const els = {
+        navButtons: document.querySelectorAll("[data-view]"),
+        shortcuts: document.querySelectorAll("[data-view-shortcut]"),
+        views: {
+          overview: document.getElementById("overviewView"),
+          reports: document.getElementById("reportsView"),
+          notifications: document.getElementById("notificationsView"),
+          settings: document.getElementById("settingsView")
+        },
+        pageKicker: document.getElementById("pageKicker"),
+        pageTitle: document.getElementById("pageTitle"),
+        connectionLabel: document.getElementById("connectionLabel"),
+        connectionDot: document.getElementById("connectionDot"),
+        toast: document.getElementById("toast"),
+        adminToken: document.getElementById("adminToken"),
+        apiBase: document.getElementById("apiBase"),
+        refreshAllBtn: document.getElementById("refreshAllBtn"),
+        saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+        testConnectionBtn: document.getElementById("testConnectionBtn"),
+        logoutBtn: document.getElementById("logoutBtn"),
+        statReportsTotal: document.getElementById("statReportsTotal"),
+        statReportsNew: document.getElementById("statReportsNew"),
+        statReportsReview: document.getElementById("statReportsReview"),
+        statActiveNotifications: document.getElementById("statActiveNotifications"),
+        recentReportsList: document.getElementById("recentReportsList"),
+        recentNotificationsList: document.getElementById("recentNotificationsList"),
+        overviewNotificationWarning: document.getElementById("overviewNotificationWarning"),
+        reportStatusFilter: document.getElementById("reportStatusFilter"),
+        reportSearch: document.getElementById("reportSearch"),
+        clearReportFiltersBtn: document.getElementById("clearReportFiltersBtn"),
+        loadReportsBtn: document.getElementById("loadReportsBtn"),
+        reportsTableBody: document.getElementById("reportsTableBody"),
+        reportEmptyState: document.getElementById("reportEmptyState"),
+        reportDetailPanel: document.getElementById("reportDetailPanel"),
+        reportDetails: document.getElementById("reportDetails"),
+        updateStatus: document.getElementById("updateStatus"),
+        updatedBy: document.getElementById("updatedBy"),
+        adminNote: document.getElementById("adminNote"),
+        updateReportBtn: document.getElementById("updateReportBtn"),
+        copyTicketBtn: document.getElementById("copyTicketBtn"),
+        notificationRouteWarning: document.getElementById("notificationRouteWarning"),
+        notificationTitle: document.getElementById("notificationTitle"),
+        notificationType: document.getElementById("notificationType"),
+        notificationPriority: document.getElementById("notificationPriority"),
+        notificationCta: document.getElementById("notificationCta"),
+        notificationStart: document.getElementById("notificationStart"),
+        notificationEnd: document.getElementById("notificationEnd"),
+        notificationLink: document.getElementById("notificationLink"),
+        notificationMessage: document.getElementById("notificationMessage"),
+        createNotificationBtn: document.getElementById("createNotificationBtn"),
+        clearNotificationFormBtn: document.getElementById("clearNotificationFormBtn"),
+        loadNotificationsBtn: document.getElementById("loadNotificationsBtn"),
+        notificationsList: document.getElementById("notificationsList"),
+        apiStatusList: document.getElementById("apiStatusList")
+      };
+
+      function apiBase() {
+        return (els.apiBase.value || DEFAULT_API).trim().replace(/\/+$/, "");
+      }
+
+      function api(path) {
+        return apiBase() + path;
+      }
+
+      function getToken() {
+        return els.adminToken.value.trim();
+      }
+
+      function saveSettings(showMessage) {
+        const token = getToken();
+        const base = apiBase();
+        localStorage.setItem(STORE.apiBase, base);
+        localStorage.setItem(STORE.tokenA, token);
+        localStorage.setItem(STORE.tokenB, token);
+        updateConnectionState();
+        if (showMessage) showToast("تم حفظ الإعدادات.", "success");
+      }
+
+      function loadSettings() {
+        els.apiBase.value = localStorage.getItem(STORE.apiBase) || DEFAULT_API;
+        els.adminToken.value = localStorage.getItem(STORE.tokenA) || localStorage.getItem(STORE.tokenB) || "";
+        updateConnectionState();
+      }
+
+      function updateConnectionState(label) {
+        const ready = Boolean(getToken());
+        els.connectionDot.classList.toggle("ready", ready);
+        els.connectionLabel.textContent = label || (ready ? "التوكن جاهز" : "بانتظار التوكن");
+      }
+
+      function showToast(message, type) {
+        els.toast.textContent = message;
+        els.toast.className = "toast show" + (type === "error" ? " error" : "");
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => {
+          els.toast.className = "toast";
+        }, 3600);
+      }
+
+      async function readApiResponse(resp) {
+        const text = await resp.text();
+        try {
+          return text ? JSON.parse(text) : {};
+        } catch (error) {
+          return { ok: false, error: text || ("HTTP " + resp.status) };
+        }
+      }
+
+      async function requestJson(path, options) {
+        const resp = await fetch(api(path), options || {});
+        const data = await readApiResponse(resp);
+        return { resp, data };
+      }
+
+      function authHeaders(includeJson) {
+        const headers = { Authorization: "Bearer " + getToken() };
+        if (includeJson) headers["Content-Type"] = "application/json";
+        return headers;
+      }
+
+      function requireToken() {
+        if (getToken()) return true;
+        showToast("أدخل ADMIN_TOKEN من الإعدادات أولاً.", "error");
+        switchView("settings");
+        return false;
+      }
+
+      function endpointMissingText() {
+        return "مسارات الإشعارات غير منشورة في Cloudflare Worker. ادمج كود الإشعارات ثم اعمل Deploy.";
+      }
+
+      function setRouteWarning(show) {
+        state.notificationsRouteReady = !show;
+        [els.notificationRouteWarning, els.overviewNotificationWarning].forEach((node) => {
+          node.textContent = endpointMissingText();
+          node.classList.toggle("show", show);
+        });
+      }
+
+      function switchView(view) {
+        state.view = view;
+        Object.entries(els.views).forEach(([key, node]) => {
+          node.classList.toggle("active", key === view);
+        });
+        els.navButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === view);
+        });
+        els.pageKicker.textContent = viewMeta[view].kicker;
+        els.pageTitle.textContent = viewMeta[view].title;
+      }
+
+      function statusLabel(status) {
+        if (status === "new") return "جديد";
+        if (status === "in_review") return "قيد المراجعة";
+        if (status === "resolved") return "تم الحل";
+        if (status === "rejected") return "مرفوض";
+        return status || "-";
+      }
+
+      function notificationTypeLabel(type) {
+        if (type === "urgent") return "عاجل";
+        if (type === "maintenance") return "صيانة";
+        if (type === "update") return "تحديث";
+        if (type === "event") return "فعالية";
+        return "عام";
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString("ar", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      function toIso(localValue) {
+        if (!localValue) return null;
+        const date = new Date(localValue);
+        return Number.isNaN(date.getTime()) ? null : date.toISOString();
+      }
+
+      function isNotificationVisible(item) {
+        if (!item || !item.is_active) return false;
+        const now = Date.now();
+        const start = item.start_at ? new Date(item.start_at).getTime() : null;
+        const end = item.end_at ? new Date(item.end_at).getTime() : null;
+        if (start && now < start) return false;
+        if (end && now > end) return false;
+        return true;
+      }
+
+      function setText(idOrNode, value) {
+        const node = typeof idOrNode === "string" ? document.getElementById(idOrNode) : idOrNode;
+        node.textContent = value == null || value === "" ? "-" : String(value);
+      }
+
+      function makeChip(label, className) {
+        const chip = document.createElement("span");
+        chip.className = "chip " + (className || "");
+        chip.textContent = label;
+        return chip;
+      }
+
+      function clearNode(node) {
+        while (node.firstChild) node.removeChild(node.firstChild);
+      }
+
+      function makeEmpty(text) {
+        const div = document.createElement("div");
+        div.className = "empty-state";
+        div.textContent = text;
+        return div;
+      }
+
+      async function loadReports(showMessage) {
+        if (!requireToken()) return;
+        try {
+          updateConnectionState("جاري تحميل البلاغات");
+          const { resp, data } = await requestJson("/admin/list", {
+            headers: authHeaders(false)
+          });
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر تحميل البلاغات");
+          }
+          state.reports = data.reports || [];
+          renderReports();
+          renderOverview();
+          updateConnectionState("متصل");
+          if (showMessage) showToast("تم تحميل البلاغات.", "success");
+        } catch (error) {
+          updateConnectionState("خطأ اتصال");
+          showToast(error.message || "تعذر تحميل البلاغات.", "error");
+        }
+      }
+
+      async function loadNotifications(showMessage) {
+        if (!requireToken()) return;
+        try {
+          updateConnectionState("جاري تحميل الإشعارات");
+          const { resp, data } = await requestJson("/admin/notifications", {
+            headers: authHeaders(false)
+          });
+          if (resp.status === 404) {
+            state.notifications = [];
+            setRouteWarning(true);
+            renderNotifications();
+            renderOverview();
+            updateConnectionState("الإشعارات غير مفعلة");
+            return;
+          }
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر تحميل الإشعارات");
+          }
+          state.notifications = data.notifications || [];
+          setRouteWarning(false);
+          renderNotifications();
+          renderOverview();
+          updateConnectionState("متصل");
+          if (showMessage) showToast("تم تحميل الإشعارات.", "success");
+        } catch (error) {
+          updateConnectionState("خطأ اتصال");
+          showToast(error.message || "تعذر تحميل الإشعارات.", "error");
+        }
+      }
+
+      async function refreshAll() {
+        if (!requireToken()) return;
+        await loadReports(false);
+        await loadNotifications(false);
+        showToast("تم تحديث اللوحة.", "success");
+      }
+
+      function filteredReports() {
+        const status = els.reportStatusFilter.value;
+        const query = els.reportSearch.value.trim().toLowerCase();
+        return state.reports.filter((report) => {
+          const statusMatch = !status || report.status === status;
+          const haystack = [
+            report.ticket_id,
+            report.ingame_name,
+            report.discord_id,
+            report.report_type,
+            report.status
+          ].join(" ").toLowerCase();
+          const searchMatch = !query || haystack.includes(query);
+          return statusMatch && searchMatch;
+        });
+      }
+
+      function renderReports() {
+        clearNode(els.reportsTableBody);
+        const rows = filteredReports();
+        if (!rows.length) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 6;
+          td.appendChild(makeEmpty("لا توجد بلاغات مطابقة."));
+          tr.appendChild(td);
+          els.reportsTableBody.appendChild(tr);
+          return;
+        }
+
+        rows.forEach((report) => {
+          const tr = document.createElement("tr");
+          tr.dataset.ticket = report.ticket_id || "";
+          if (state.selectedReport && state.selectedReport.ticket_id === report.ticket_id) {
+            tr.classList.add("selected");
+          }
+
+          [
+            report.ticket_id,
+            report.ingame_name,
+            report.discord_id,
+            report.report_type,
+            null,
+            formatDate(report.updated_at || report.created_at)
+          ].forEach((value, index) => {
+            const td = document.createElement("td");
+            if (index === 4) {
+              td.appendChild(makeChip(statusLabel(report.status), report.status));
+            } else {
+              td.textContent = value || "-";
+            }
+            tr.appendChild(td);
+          });
+
+          tr.addEventListener("click", () => selectReport(report));
+          els.reportsTableBody.appendChild(tr);
+        });
+      }
+
+      function selectReport(report) {
+        state.selectedReport = report;
+        els.reportEmptyState.classList.add("hidden");
+        els.reportDetailPanel.classList.remove("hidden");
+        els.updateStatus.value = report.status || "new";
+        els.adminNote.value = report.admin_note || "";
+        renderReportDetails(report);
+        renderReports();
+      }
+
+      function renderReportDetails(report) {
+        clearNode(els.reportDetails);
+        [
+          ["رقم البلاغ", report.ticket_id],
+          ["الاسم داخل اللعبة", report.ingame_name],
+          ["Discord ID", report.discord_id],
+          ["نوع البلاغ", report.report_type],
+          ["الحالة", statusLabel(report.status)],
+          ["ملاحظة الإدارة", report.admin_note || "لا يوجد"],
+          ["تاريخ الإنشاء", formatDate(report.created_at)],
+          ["آخر تحديث", formatDate(report.updated_at)]
+        ].forEach(([label, value]) => {
+          const row = document.createElement("div");
+          row.className = "detail-row";
+          const labelEl = document.createElement("div");
+          labelEl.className = "detail-label";
+          labelEl.textContent = label;
+          const valueEl = document.createElement("div");
+          valueEl.className = "detail-value";
+          valueEl.textContent = value || "-";
+          row.append(labelEl, valueEl);
+          els.reportDetails.appendChild(row);
+        });
+      }
+
+      async function updateReport() {
+        if (!requireToken()) return;
+        if (!state.selectedReport || !state.selectedReport.ticket_id) {
+          showToast("اختر بلاغًا أولاً.", "error");
+          return;
+        }
+
+        try {
+          const payload = {
+            ticketId: state.selectedReport.ticket_id,
+            newStatus: els.updateStatus.value,
+            note: els.adminNote.value.trim(),
+            updatedBy: els.updatedBy.value.trim() || "admin"
+          };
+          const { resp, data } = await requestJson("/admin/update-status", {
+            method: "POST",
+            headers: authHeaders(true),
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر تحديث البلاغ");
+          }
+          showToast("تم تحديث البلاغ.", "success");
+          await loadReports(false);
+          const fresh = state.reports.find((report) => report.ticket_id === payload.ticketId);
+          if (fresh) selectReport(fresh);
+        } catch (error) {
+          showToast(error.message || "تعذر تحديث البلاغ.", "error");
+        }
+      }
+
+      function renderNotifications() {
+        clearNode(els.notificationsList);
+        if (!state.notificationsRouteReady) {
+          els.notificationsList.appendChild(makeEmpty("مسار الإشعارات غير متاح على Worker الحالي."));
+          return;
+        }
+        if (!state.notifications.length) {
+          els.notificationsList.appendChild(makeEmpty("لا توجد إشعارات حالية."));
+          return;
+        }
+
+        state.notifications.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "list-item";
+
+          const head = document.createElement("div");
+          head.className = "item-head";
+
+          const titleWrap = document.createElement("div");
+          const title = document.createElement("div");
+          title.className = "item-title";
+          title.textContent = item.title || "إشعار";
+          const meta = document.createElement("div");
+          meta.className = "item-meta";
+          meta.textContent = "الأولوية: " + (item.priority || 0) + " | " + formatDate(item.created_at);
+          titleWrap.append(title, meta);
+
+          const chips = document.createElement("div");
+          chips.append(
+            makeChip(item.is_active ? "نشط" : "متوقف", item.is_active ? "active" : "inactive"),
+            makeChip(notificationTypeLabel(item.type), item.type || "announcement")
+          );
+          chips.style.display = "flex";
+          chips.style.flexWrap = "wrap";
+          chips.style.gap = "6px";
+
+          head.append(titleWrap, chips);
+
+          const message = document.createElement("div");
+          message.className = "item-message";
+          message.textContent = item.message || "";
+
+          const timing = document.createElement("div");
+          timing.className = "item-meta";
+          timing.textContent = "البداية: " + (item.start_at ? formatDate(item.start_at) : "الآن") +
+            " | النهاية: " + (item.end_at ? formatDate(item.end_at) : "بدون");
+
+          const actions = document.createElement("div");
+          actions.className = "item-actions";
+
+          const toggleBtn = document.createElement("button");
+          toggleBtn.className = "btn btn-small";
+          toggleBtn.type = "button";
+          toggleBtn.innerHTML = '<i class="fas fa-power-off"></i><span>' + (item.is_active ? "إيقاف" : "تفعيل") + '</span>';
+          toggleBtn.addEventListener("click", () => toggleNotification(item.id));
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn btn-small btn-danger";
+          deleteBtn.type = "button";
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i><span>حذف</span>';
+          deleteBtn.addEventListener("click", () => deleteNotification(item.id));
+
+          actions.append(toggleBtn, deleteBtn);
+          card.append(head, message, timing, actions);
+          els.notificationsList.appendChild(card);
+        });
+      }
+
+      async function createNotification() {
+        if (!requireToken()) return;
+        if (!els.notificationTitle.value.trim() || !els.notificationMessage.value.trim()) {
+          showToast("العنوان والنص مطلوبان.", "error");
+          return;
+        }
+
+        const payload = {
+          title: els.notificationTitle.value.trim(),
+          message: els.notificationMessage.value.trim(),
+          type: els.notificationType.value,
+          priority: Number(els.notificationPriority.value || 50),
+          start_at: toIso(els.notificationStart.value),
+          end_at: toIso(els.notificationEnd.value),
+          link_url: els.notificationLink.value.trim() || null,
+          cta_text: els.notificationCta.value.trim() || null
+        };
+
+        try {
+          const { resp, data } = await requestJson("/admin/notifications", {
+            method: "POST",
+            headers: authHeaders(true),
+            body: JSON.stringify(payload)
+          });
+          if (resp.status === 404) {
+            setRouteWarning(true);
+            showToast(endpointMissingText(), "error");
+            return;
+          }
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر إنشاء الإشعار");
+          }
+          clearNotificationForm();
+          await loadNotifications(false);
+          showToast("تم نشر الإشعار.", "success");
+        } catch (error) {
+          showToast(error.message || "تعذر إنشاء الإشعار.", "error");
+        }
+      }
+
+      async function toggleNotification(id) {
+        if (!requireToken()) return;
+        try {
+          const { resp, data } = await requestJson("/admin/notifications/" + encodeURIComponent(id) + "/toggle", {
+            method: "PATCH",
+            headers: authHeaders(false)
+          });
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر تغيير حالة الإشعار");
+          }
+          await loadNotifications(false);
+          showToast("تم تحديث حالة الإشعار.", "success");
+        } catch (error) {
+          showToast(error.message || "تعذر تحديث الإشعار.", "error");
+        }
+      }
+
+      async function deleteNotification(id) {
+        if (!requireToken()) return;
+        const confirmed = window.confirm("هل تريد حذف هذا الإشعار؟");
+        if (!confirmed) return;
+        try {
+          const { resp, data } = await requestJson("/admin/notifications/" + encodeURIComponent(id), {
+            method: "DELETE",
+            headers: authHeaders(false)
+          });
+          if (!resp.ok || !data.ok) {
+            throw new Error(data.error || "تعذر حذف الإشعار");
+          }
+          await loadNotifications(false);
+          showToast("تم حذف الإشعار.", "success");
+        } catch (error) {
+          showToast(error.message || "تعذر حذف الإشعار.", "error");
+        }
+      }
+
+      function clearNotificationForm() {
+        els.notificationTitle.value = "";
+        els.notificationMessage.value = "";
+        els.notificationType.value = "announcement";
+        els.notificationPriority.value = "50";
+        els.notificationCta.value = "";
+        els.notificationStart.value = "";
+        els.notificationEnd.value = "";
+        els.notificationLink.value = "";
+      }
+
+      function renderOverview() {
+        const total = state.reports.length;
+        const fresh = state.reports.filter((report) => report.status === "new").length;
+        const review = state.reports.filter((report) => report.status === "in_review").length;
+        const activeNotifications = state.notifications.filter(isNotificationVisible).length;
+
+        setText(els.statReportsTotal, total);
+        setText(els.statReportsNew, fresh);
+        setText(els.statReportsReview, review);
+        setText(els.statActiveNotifications, activeNotifications);
+
+        renderRecentReports();
+        renderRecentNotifications();
+      }
+
+      function renderRecentReports() {
+        clearNode(els.recentReportsList);
+        const rows = [...state.reports]
+          .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+          .slice(0, 5);
+
+        if (!rows.length) {
+          els.recentReportsList.appendChild(makeEmpty("لا توجد بلاغات محملة."));
+          return;
+        }
+
+        rows.forEach((report) => {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = "list-item";
+          item.style.textAlign = "right";
+          item.addEventListener("click", () => {
+            switchView("reports");
+            selectReport(report);
+          });
+
+          const head = document.createElement("div");
+          head.className = "item-head";
+          const title = document.createElement("div");
+          title.className = "item-title";
+          title.textContent = report.ticket_id || "-";
+          head.append(title, makeChip(statusLabel(report.status), report.status));
+
+          const meta = document.createElement("div");
+          meta.className = "item-meta";
+          meta.textContent = (report.ingame_name || "-") + " | " + (report.report_type || "-");
+
+          item.append(head, meta);
+          els.recentReportsList.appendChild(item);
+        });
+      }
+
+      function renderRecentNotifications() {
+        clearNode(els.recentNotificationsList);
+        if (!state.notificationsRouteReady) {
+          els.recentNotificationsList.appendChild(makeEmpty("مسار الإشعارات غير متاح."));
+          return;
+        }
+
+        const rows = state.notifications.filter(isNotificationVisible).slice(0, 5);
+        if (!rows.length) {
+          els.recentNotificationsList.appendChild(makeEmpty("لا توجد إشعارات نشطة."));
+          return;
+        }
+
+        rows.forEach((item) => {
+          const node = document.createElement("div");
+          node.className = "list-item";
+          const head = document.createElement("div");
+          head.className = "item-head";
+          const title = document.createElement("div");
+          title.className = "item-title";
+          title.textContent = item.title || "إشعار";
+          head.append(title, makeChip(notificationTypeLabel(item.type), item.type || "announcement"));
+          const message = document.createElement("div");
+          message.className = "item-message";
+          message.textContent = item.message || "";
+          node.append(head, message);
+          els.recentNotificationsList.appendChild(node);
+        });
+      }
+
+      async function testConnection() {
+        if (!requireToken()) return;
+        clearNode(els.apiStatusList);
+        saveSettings(false);
+        await testEndpoint("البلاغات", "/admin/list", true);
+        await testEndpoint("الإشعارات العامة", "/notifications/active", false);
+        await testEndpoint("إدارة الإشعارات", "/admin/notifications", true);
+      }
+
+      async function testEndpoint(label, path, auth) {
+        const row = document.createElement("div");
+        row.className = "detail-row";
+        const title = document.createElement("div");
+        title.className = "detail-label";
+        title.textContent = label;
+        const value = document.createElement("div");
+        value.className = "detail-value";
+        value.textContent = "جاري الاختبار...";
+        row.append(title, value);
+        els.apiStatusList.appendChild(row);
+
+        try {
+          const options = auth ? { headers: authHeaders(false) } : {};
+          const { resp, data } = await requestJson(path, options);
+          if (resp.ok && data.ok) {
+            value.textContent = "متاح";
+            value.style.color = "#9ee2b8";
+          } else {
+            value.textContent = "غير متاح: " + (data.error || resp.status);
+            value.style.color = resp.status === 404 ? "#ffb1b3" : "var(--gold-strong)";
+          }
+        } catch (error) {
+          value.textContent = "فشل الاتصال";
+          value.style.color = "#ffb1b3";
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem(STORE.tokenA);
+        localStorage.removeItem(STORE.tokenB);
+        els.adminToken.value = "";
+        state.reports = [];
+        state.notifications = [];
+        state.selectedReport = null;
+        renderReports();
+        renderNotifications();
+        renderOverview();
+        updateConnectionState();
+        showToast("تم حذف التوكن من هذا المتصفح.", "success");
+      }
+
+      function bindEvents() {
+        els.navButtons.forEach((button) => {
+          button.addEventListener("click", () => switchView(button.dataset.view));
+        });
+        els.shortcuts.forEach((button) => {
+          button.addEventListener("click", () => switchView(button.dataset.viewShortcut));
+        });
+        els.refreshAllBtn.addEventListener("click", refreshAll);
+        els.saveSettingsBtn.addEventListener("click", () => saveSettings(true));
+        els.testConnectionBtn.addEventListener("click", testConnection);
+        els.logoutBtn.addEventListener("click", logout);
+        els.loadReportsBtn.addEventListener("click", () => loadReports(true));
+        els.reportStatusFilter.addEventListener("change", renderReports);
+        els.reportSearch.addEventListener("input", renderReports);
+        els.clearReportFiltersBtn.addEventListener("click", () => {
+          els.reportStatusFilter.value = "";
+          els.reportSearch.value = "";
+          renderReports();
+        });
+        els.updateReportBtn.addEventListener("click", updateReport);
+        els.copyTicketBtn.addEventListener("click", async () => {
+          if (!state.selectedReport || !state.selectedReport.ticket_id) return;
+          try {
+            await navigator.clipboard.writeText(state.selectedReport.ticket_id);
+            showToast("تم نسخ رقم البلاغ.", "success");
+          } catch (error) {
+            showToast("تعذر النسخ.", "error");
+          }
+        });
+        els.loadNotificationsBtn.addEventListener("click", () => loadNotifications(true));
+        els.createNotificationBtn.addEventListener("click", createNotification);
+        els.clearNotificationFormBtn.addEventListener("click", clearNotificationForm);
+      }
+
+      function init() {
+        loadSettings();
+        bindEvents();
+        renderReports();
+        renderNotifications();
+        renderOverview();
+        if (getToken()) {
+          refreshAll();
+        } else {
+          clearNode(els.apiStatusList);
+          els.apiStatusList.appendChild(makeEmpty("أدخل التوكن ثم اختبر الاتصال."));
+        }
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

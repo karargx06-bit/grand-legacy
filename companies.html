@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grand Legacy - لعبة الحياة الواقعية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #D4AF37;
+            --primary-dark: #B8860B;
+            --primary-light: #FFDF00;
+            --secondary-color: #000000;
+            --secondary-light: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #141414;
+            --danger: #F44336;
+            --success: #4CAF50;
+            --info: #2196F3;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            direction: rtl;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.14), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.04), transparent 45%),
+                linear-gradient(145deg, #050505 0%, #0b0b0b 45%, #121212 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.55s ease, visibility 0.55s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-content {
+            text-align: center;
+            position: relative;
+            padding: 34px 28px 26px;
+            border-radius: 24px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            box-shadow:
+                0 22px 40px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(212, 175, 55, 0.12);
+            backdrop-filter: blur(6px);
+        }
+
+        .loading-emblem {
+            width: 116px;
+            height: 116px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            position: relative;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            background: radial-gradient(circle at 30% 28%, rgba(212, 175, 55, 0.24), rgba(0, 0, 0, 0.55) 68%);
+            box-shadow: inset 0 0 22px rgba(212, 175, 55, 0.2);
+        }
+
+        .loading-emblem::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary-color);
+            border-right-color: rgba(212, 175, 55, 0.45);
+            animation: loaderOrbit 1.6s linear infinite;
+        }
+
+        .eagle-loading-img {
+            width: 74px;
+            height: 74px;
+            object-fit: contain;
+            border-radius: 12px;
+            filter:
+                drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55))
+                drop-shadow(0 0 12px rgba(212, 175, 55, 0.3))
+                saturate(1.08)
+                contrast(1.05);
+            animation: eagleFloat 1.8s ease-in-out infinite;
+        }
+
+        .loading-title {
+            margin-top: 8px;
+            color: var(--primary-color);
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-size: 0.98rem;
+        }
+
+        .loading-progress {
+            width: min(230px, 72vw);
+            height: 4px;
+            margin: 16px auto 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .loading-progress::before {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 42%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), var(--primary-color), rgba(255, 223, 0, 0.45));
+            animation: loadingSlide 1.35s ease-in-out infinite;
+        }
+
+        @keyframes loaderOrbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes eagleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes loadingSlide {
+            0% { transform: translateX(-130%); }
+            100% { transform: translateX(320%); }
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--primary-color);
+            transition: background 0.3s;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.96);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-eagle-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.4));
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .logo-eagle-img:hover {
+            filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.5)) brightness(1.2);
+            transform: scale(1.05);
+        }
+
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-color);
+        }
+
+        .cta-nav {
+            background: var(--primary-color);
+            color: var(--secondary-color) !important;
+        }
+
+        .cta-nav:hover {
+            background: var(--primary-dark) !important;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            position: relative;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(212, 175, 55, 0.2), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06), transparent 30%),
+                radial-gradient(circle at 70% 75%, rgba(212, 175, 55, 0.1), transparent 40%),
+                linear-gradient(135deg, #0a0f1d 0%, #111827 45%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            margin-top: 70px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.62)),
+                repeating-linear-gradient(
+                    120deg,
+                    rgba(255, 255, 255, 0.02) 0px,
+                    rgba(255, 255, 255, 0.02) 2px,
+                    transparent 2px,
+                    transparent 14px
+                );
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .features {
+            background: var(--bg-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--secondary-light);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+        }
+
+        .jobs-grid,
+        .companies-grid,
+        .company-types-grid,
+        .requirements-grid,
+        .laws-grid,
+        .crime-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .job-card,
+        .company-card,
+        .company-type-card,
+        .requirement-card,
+        .law-card,
+        .crime-card {
+            background: var(--secondary-light);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .job-card:hover,
+        .company-card:hover,
+        .company-type-card:hover,
+        .requirement-card:hover,
+        .law-card:hover,
+        .crime-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .job-card:hover,
+        .company-card:hover,
+        .company-type-card:hover,
+        .requirement-card:hover,
+        .law-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .crime-card:hover {
+            border-color: var(--danger);
+            box-shadow: 0 10px 20px rgba(244, 67, 54, 0.2);
+        }
+
+        .job-icon,
+        .company-icon,
+        .company-type-icon,
+        .requirement-icon,
+        .crime-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .job-icon,
+        .company-icon,
+        .requirement-icon {
+            color: var(--primary-color);
+        }
+
+        .company-type-icon.legal {
+            color: var(--success);
+        }
+
+        .company-type-icon.illegal,
+        .crime-icon {
+            color: var(--danger);
+        }
+
+        .job-title,
+        .company-title,
+        .company-type-title,
+        .requirement-title,
+        .crime-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .job-title,
+        .company-title,
+        .requirement-title {
+            color: var(--text-primary);
+        }
+
+        .company-type-title.legal {
+            color: var(--success);
+        }
+
+        .company-type-title.illegal,
+        .crime-title {
+            color: var(--danger);
+        }
+
+        .job-desc,
+        .company-desc,
+        .company-type-desc,
+        .requirement-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .job-tag,
+        .badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .job-tag {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--primary-color);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        .badge.legal {
+            background: rgba(76, 175, 80, 0.12);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.25);
+        }
+
+        .badge.illegal {
+            background: rgba(244, 67, 54, 0.12);
+            color: #ff8a80;
+            border: 1px solid rgba(244, 67, 54, 0.25);
+        }
+
+        .info-box {
+            background: rgba(212, 175, 55, 0.08);
+            border-right: 4px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .warning-box i {
+            font-size: 2rem;
+            color: var(--danger);
+            margin-top: 2px;
+        }
+
+        .company-section {
+            background: var(--bg-secondary);
+        }
+
+        .company-highlight-box {
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(255,255,255,0.02));
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 35px;
+        }
+
+        .company-highlight-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .company-list {
+            list-style: none;
+            margin-top: 14px;
+        }
+
+        .company-list li {
+            position: relative;
+            padding-right: 24px;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .company-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .company-type-card {
+            border-top: 4px solid transparent;
+        }
+
+        .company-type-card.legal-card {
+            border-top-color: var(--success);
+        }
+
+        .company-type-card.illegal-card {
+            border-top-color: var(--danger);
+        }
+
+        .company-subtitle {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            margin-top: 16px;
+        }
+
+        /* Companies Visual Upgrade */
+        .companies-hero-box {
+            background:
+                linear-gradient(135deg, rgba(212,175,55,0.10), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 35%);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        }
+
+        .companies-hero-box h3 {
+            color: var(--primary-color);
+            font-size: 1.55rem;
+            margin-bottom: 12px;
+        }
+
+        .companies-hero-box p {
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .company-pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .company-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(212,175,55,0.24);
+            background: rgba(212,175,55,0.10);
+            color: var(--primary-color);
+        }
+
+        .company-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin: 28px 0 34px;
+        }
+
+        .company-flow-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 22px;
+            transition: 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-flow-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .company-flow-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.25);
+        }
+
+        .company-flow-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(212,175,55,0.14);
+            color: var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .company-flow-card h4 {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .company-flow-card p {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            margin: 0;
+        }
+
+        .company-split-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .company-panel {
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            background: var(--secondary-light);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .company-panel.legal-panel {
+            border-top: 4px solid var(--success);
+        }
+
+        .company-panel.illegal-panel {
+            border-top: 4px solid var(--danger);
+        }
+
+        .company-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .company-panel-header i {
+            font-size: 2rem;
+        }
+
+        .company-panel.legal-panel .company-panel-header i,
+        .company-panel.legal-panel .company-panel-title {
+            color: var(--success);
+        }
+
+        .company-panel.illegal-panel .company-panel-header i,
+        .company-panel.illegal-panel .company-panel-title {
+            color: var(--danger);
+        }
+
+        .company-panel-title {
+            font-size: 1.35rem;
+            margin: 0;
+        }
+
+        .company-panel p {
+            color: var(--text-secondary);
+        }
+
+        .company-mini-title {
+            margin: 18px 0 12px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .company-bullet-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .company-bullet-list li {
+            position: relative;
+            padding-right: 22px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .company-bullet-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-weight: 900;
+        }
+
+        .legal-panel .company-bullet-list li::before {
+            color: var(--success);
+        }
+
+        .illegal-panel .company-bullet-list li::before {
+            color: var(--danger);
+        }
+
+        .assets-grid,
+        .risks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .asset-card,
+        .risk-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            transition: 0.3s ease;
+        }
+
+        .asset-card:hover,
+        .risk-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .asset-card i,
+        .risk-card i {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+        }
+
+        .asset-card i {
+            color: var(--primary-color);
+        }
+
+        .risk-card i {
+            color: var(--danger);
+        }
+
+        .asset-card h4,
+        .risk-card h4 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .asset-card p,
+        .risk-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+
+        .company-note-box {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            border-right: 4px solid var(--primary-color);
+            background: rgba(212,175,55,0.08);
+            color: var(--text-secondary);
+        }
+
+        .company-note-box strong {
+            color: var(--primary-color);
+        }
+
+        /* Government orgs */
+        .org-tabs {
+            background: var(--secondary-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--bg-primary);
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .tab-content {
+            padding: 40px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .org-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .org-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+        }
+
+        .org-text h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .org-text p + p {
+            margin-top: 14px;
+        }
+
+        .org-badge,
+        .crime-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .org-badge {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--primary-color);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+
+        .crime-badge {
+            background: rgba(244, 67, 54, 0.12);
+            color: #ff8a80;
+            border: 1px solid rgba(244, 67, 54, 0.35);
+        }
+
+        .org-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 22px 0 26px;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .summary-card h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .summary-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+
+        .subdivision-title,
+        .rank-title,
+        .crime-orgs-title {
+            font-size: 1.15rem;
+            margin: 28px 0 16px;
+            color: var(--text-primary);
+        }
+
+        .subdivision-grid,
+        .rank-grid,
+        .crime-orgs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+        }
+
+        .subdivision-card,
+        .rank-card,
+        .crime-org-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .subdivision-card:hover,
+        .rank-card:hover,
+        .crime-org-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212, 175, 55, 0.35);
+        }
+
+        .subdivision-card i,
+        .rank-card i,
+        .crime-org-card i {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .subdivision-card h4,
+        .rank-card h4,
+        .crime-org-card h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subdivision-card p,
+        .rank-card p,
+        .crime-org-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .relation-note {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-right: 4px solid var(--primary-color);
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--text-secondary);
+            border-radius: 10px;
+        }
+
+        .org-features {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .org-features li {
+            padding: 10px 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-right: 25px;
+        }
+
+        .org-features li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .laws-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .law-card {
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .law-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .law-desc {
+            color: var(--text-secondary);
+        }
+
+        .join {
+            background: linear-gradient(135deg, var(--secondary-light), var(--bg-primary));
+            text-align: center;
+        }
+
+        .join-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            transform: translateY(-3px);
+        }
+
+        .footer {
+            background: var(--bg-primary);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            color: var(--text-secondary);
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (min-width: 768px) {
+            .org-content {
+                grid-template-columns: auto 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(0, 0, 0, 0.95);
+                flex-direction: column;
+                padding: 40px 20px;
+                transition: right 0.3s;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .company-split-grid,
+            .company-flow-grid,
+            .assets-grid,
+            .risks-grid,
+            .org-summary,
+            .subdivision-grid,
+            .rank-grid,
+            .crime-orgs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-content {
+                padding: 24px;
+            }
+
+            .companies-hero-box {
+                padding: 22px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-emblem">
+                <img src="photos/logo.png" alt="شعار Grand Legacy - نسر" class="eagle-loading-img">
+            </div>
+            <h2 class="loading-title">Grand Legacy</h2>
+            <p class="loading-text">تجهيز العالم... لحظات ونبدأ</p>
+            <div class="loading-progress" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <img src="photos/logo.png" alt="شعار Grand Legacy - طائر العقاب" class="logo-eagle-img" id="site-logo">
+                </div>
+                <div class="logo-text">
+                    <h1>Grand Legacy</h1>
+                    <p>لعبة الحياة الواقعية</p>
+                </div>
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html#home" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+                <li><a href="index.html#features" class="nav-link"><i class="fas fa-star"></i> المميزات</a></li>
+                <li><a href="index.html#jobs" class="nav-link"><i class="fas fa-briefcase"></i> الوظائف العامة</a></li>
+                <li><a href="companies.html" class="nav-link"><i class="fas fa-building"></i> الشركات</a></li>
+                <li><a href="index.html#organizations" class="nav-link"><i class="fas fa-landmark"></i> المنظمات الحكومية</a></li>
+                <li><a href="index.html#laws" class="nav-link"><i class="fas fa-gavel"></i> القوانين</a></li>
+                <li><a href="index.html#server-rules" class="nav-link"><i class="fas fa-scroll"></i> قوانين اللعبة</a></li>
+                <li><a href="player-guide.html" class="nav-link"><i class="fas fa-book-open"></i> دليل اللاعب</a></li>
+                <li><a href="index.html#join" class="nav-link cta-nav"><i class="fab fa-discord"></i> انضم الآن</a></li>
+            </ul>
+
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="companies" class="section company-section">
+            <div class="container">
+                <h2 class="section-title">قسم <span class="highlight">الشركات</span></h2>
+                <p class="section-subtitle">
+                    هنا ينتقل اللاعب من مرحلة الوظائف العامة إلى مرحلة النفوذ والإدارة. امتلاك شركة لا يعني فقط الربح،
+                    بل يعني امتلاك أصول، تشغيل موظفين، الدخول في السوق، وتحمل المسؤولية الكاملة عن كل نشاط يجري باسم الشركة.
+                </p>
+
+                <div class="companies-hero-box">
+                    <h3>نظام الشركات في Grand Legacy</h3>
+                    <p>
+                        يستطيع اللاعب شراء شركة من الحكومة بعد توافر الشروط المطلوبة التي سيتم تحديدها لاحقًا.
+                        بعد ذلك يصبح قادرًا على تشغيل الأعمال، توظيف العمال، شراء المركبات والمعدات، والتوسع
+                        في المسارات القانونية أو غير القانونية أو الدمج بينهما داخل نفس الشركة.
+                    </p>
+
+                    <div class="company-pill-row">
+                        <span class="company-pill">شراء من الحكومة</span>
+                        <span class="company-pill">أصول ومركبات</span>
+                        <span class="company-pill">توظيف وإدارة</span>
+                        <span class="company-pill">أعمال قانونية</span>
+                        <span class="company-pill">أعمال غير قانونية</span>
+                        <span class="company-pill">مخاطر ومصادرة</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="border-right-color: var(--info); background: rgba(33, 150, 243, 0.08); display: flex; align-items: flex-start; gap: 15px; margin-bottom: 35px; border-radius: 12px; padding: 20px;">
+                    <i class="fas fa-info-circle" style="font-size: 2rem; color: var(--info); margin-top: 2px;"></i>
+                    <div>
+                        <strong style="color: var(--info); display: block; margin-bottom: 5px; font-size: 1.1rem;">تنبيه: النظام قيد التطوير</strong>
+                        <p style="margin: 0; color: var(--text-secondary);">
+                            يرجى العلم أن نظام الشركات الموضح في هذه الصفحة لا يمثل النسخة النهائية. العديد من الخصائص والمزايا المتقدمة المخطط لها لا تزال قيد التطوير، وسيتم إضافتها وتفعيلها تدريجياً مع التحديثات القادمة.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>
+                        <strong>تنبيه مهم:</strong>
+                        يمكن للشركة أن تجمع بين الأعمال القانونية وغير القانونية في نفس الكيان، لكن هذا القرار
+                        يحمل مخاطر كبيرة مثل التفتيش، التحقيقات، حجز الأصول، تجميد النشاط، أو مصادرة الشركة من الدولة
+                        مع تبعات قانونية إضافية على المالك والموظفين.
+                    </p>
+                </div>
+
+                <h3 class="crime-orgs-title" style="margin-bottom: 18px;">كيف يبدأ نظام الشركات؟</h3>
+                <div class="company-flow-grid">
+                    <div class="company-flow-card">
+                        <div class="company-flow-number">1</div>
+                        <h4>شراء الشركة</h4>
+                        <p>
+                            يحصل اللاعب على الشركة من الحكومة بعد استيفاء الشروط الرسمية التي سيتم تحديدها لاحقًا
+                            داخل النظام.
+                        </p>
+                    </div>
+
+                    <div class="company-flow-card">
+                        <div class="company-flow-number">2</div>
+                        <h4>تحديد النشاط</h4>
+                        <p>
+                            يختار المالك مجال العمل: قانوني، غير قانوني، أو مزيج بين الاثنين بحسب استراتيجيته.
+                        </p>
+                    </div>
+
+                    <div class="company-flow-card">
+                        <div class="company-flow-number">3</div>
+                        <h4>شراء الأصول</h4>
+                        <p>
+                            لا يبدأ أي نشاط بدون أصول فعلية مثل الباصات، التكاسي، الورش، المزارع، المخازن أو المرائب.
+                        </p>
+                    </div>
+
+                    <div class="company-flow-card">
+                        <div class="company-flow-number">4</div>
+                        <h4>توظيف العمال</h4>
+                        <p>
+                            بعد تجهيز الأصول يمكن توظيف السواق، الفنيين، العمال أو العناصر المرتبطين بطبيعة النشاط.
+                        </p>
+                    </div>
+
+                    <div class="company-flow-card">
+                        <div class="company-flow-number">5</div>
+                        <h4>التوسع أو السقوط</h4>
+                        <p>
+                            كل توسع يرفع الدخل والنفوذ، لكنه يرفع أيضًا مستوى الرقابة والمخاطر إذا دخلت الشركة في أعمال مشبوهة.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="company-split-grid">
+                    <div class="company-panel legal-panel">
+                        <div class="company-panel-header">
+                            <i class="fas fa-scale-balanced"></i>
+                            <h3 class="company-panel-title">الأعمال القانونية</h3>
+                        </div>
+
+                        <p>
+                            الأعمال القانونية تمثل الواجهة الرسمية للشركة داخل المدينة. هذه الأنشطة تعمل تحت النظام
+                            العام، وبعضها يتطلب تصاريح أو موافقات خاصة من الحكومة بحسب حساسية النشاط أو موقعه.
+                        </p>
+
+                        <h4 class="company-mini-title">أمثلة على الأعمال القانونية</h4>
+                        <ul class="company-bullet-list">
+                            <li>النقل العام</li>
+                            <li>دخول الميناء والعمل داخله</li>
+                            <li>الميكانيكي</li>
+                            <li>تشغيل سائق تكسي</li>
+                            <li>تشغيل سائق باص</li>
+                            <li>خدمات نقل أو تشغيل أخرى مرتبطة بالشركة</li>
+                        </ul>
+
+                        <h4 class="company-mini-title">كيف تعمل هذه الأنشطة؟</h4>
+                        <ul class="company-bullet-list">
+                            <li>إذا أراد المالك تشغيل سائق باص، فيجب عليه شراء باصات فعلية وتسجيلها ضمن أصول الشركة.</li>
+                            <li>إذا أراد تشغيل سائق تكسي، فيجب توفير سيارات وتجهيزها للعمل التجاري.</li>
+                            <li>إذا أراد تشغيل ورشة ميكانيكي، فيجب امتلاك موقع ومعدات وأدوات صيانة مناسبة.</li>
+                            <li>دخول الميناء لا يمكن إلا عبر تصريح خاص من الحكومة يعطى للشركة.</li>
+                            <li>كل أصل جديد يسمح بتوسيع النشاط وتوظيف عدد أكبر من العمال.</li>
+                        </ul>
+
+                        <span class="badge legal">نشاط رسمي</span>
+                    </div>
+
+                    <div class="company-panel illegal-panel">
+                        <div class="company-panel-header">
+                            <i class="fas fa-user-secret"></i>
+                            <h3 class="company-panel-title">الأعمال غير القانونية</h3>
+                        </div>
+
+                        <p>
+                            الأعمال غير القانونية تمثل الجانب الخفي من الشركات، حيث يمكن استخدام الشركة كغطاء
+                            أو كأداة تشغيل لأنشطة تحقق أرباحًا مرتفعة جدًا، لكنها تضع المالك في مواجهة مباشرة
+                            مع الدولة والمخاطر الجنائية.
+                        </p>
+
+                        <h4 class="company-mini-title">أمثلة على الأعمال غير القانونية</h4>
+                        <ul class="company-bullet-list">
+                            <li>سرقة السيارات</li>
+                            <li>سرقة البنك</li>
+                            <li>تجارة المخدرات</li>
+                            <li>غسيل الأموال</li>
+                        </ul>
+
+                        <h4 class="company-mini-title">كيف تعمل هذه الأنشطة؟</h4>
+                        <ul class="company-bullet-list">
+                            <li>تجارة المخدرات تتطلب مزرعة ومعدات تصنيع وموقع تخزين وربما مرأب أو نقطة توزيع.</li>
+                            <li>سرقة السيارات تحتاج أماكن تخزين أو تفكيك أو شبكة لنقل وبيع المركبات المسروقة.</li>
+                            <li>سرقة البنك تحتاج تجهيزات خاصة مثل مركبات هروب ومخابئ وفريق منظم.</li>
+                            <li>غسيل الأموال يتطلب واجهات أو أنشطة ظاهرها قانوني لتغطية الحركة المالية.</li>
+                            <li>ينطبق نفس المنطق على أي نشاط غير قانوني: يجب شراء الأصل، تجهيز الموقع، ثم تشغيل النشاط.</li>
+                        </ul>
+
+                        <span class="badge illegal">عالي الخطورة</span>
+                    </div>
+                </div>
+
+                <h3 class="crime-orgs-title" style="margin-bottom: 18px;">أمثلة على الأصول المطلوبة</h3>
+                <div class="assets-grid">
+                    <div class="asset-card">
+                        <i class="fas fa-bus"></i>
+                        <h4>باصات</h4>
+                        <p>مطلوبة لتشغيل نشاط النقل العام أو توظيف سواق باص داخل الشركة.</p>
+                    </div>
+
+                    <div class="asset-card">
+                        <i class="fas fa-taxi"></i>
+                        <h4>سيارات أجرة</h4>
+                        <p>مطلوبة لتشغيل نشاط التكسي بشكل فعلي وربط السواقين بأصول الشركة.</p>
+                    </div>
+
+                    <div class="asset-card">
+                        <i class="fas fa-screwdriver-wrench"></i>
+                        <h4>ورشة ومعدات</h4>
+                        <p>ضرورية لتشغيل نشاط الميكانيكي والصيانة والخدمات الفنية.</p>
+                    </div>
+
+                    <div class="asset-card">
+                        <i class="fas fa-warehouse"></i>
+                        <h4>مرأب أو مخزن</h4>
+                        <p>قد يستخدم لحفظ المركبات أو المعدات أو تخزين المواد حسب نوع النشاط.</p>
+                    </div>
+
+                    <div class="asset-card">
+                        <i class="fas fa-seedling"></i>
+                        <h4>مزرعة</h4>
+                        <p>تعد من الأصول الأساسية لبعض الأنشطة غير القانونية مثل إنتاج المواد الممنوعة.</p>
+                    </div>
+
+                    <div class="asset-card">
+                        <i class="fas fa-ship"></i>
+                        <h4>تصريح ميناء</h4>
+                        <p>ليس أصلًا ماديًا فقط، بل صلاحية حكومية تفتح للشركة بابًا اقتصاديًا مهمًا.</p>
+                    </div>
+                </div>
+
+                <h3 class="crime-orgs-title" style="margin-bottom: 18px; margin-top: 30px;">المخاطر المحتملة</h3>
+                <div class="risks-grid">
+                    <div class="risk-card">
+                        <i class="fas fa-building-shield"></i>
+                        <h4>حجز الشركة</h4>
+                        <p>قد تقوم الدولة بحجز الشركة بالكامل إذا ثبت تورطها في أنشطة غير قانونية.</p>
+                    </div>
+
+                    <div class="risk-card">
+                        <i class="fas fa-box-archive"></i>
+                        <h4>مصادرة الأصول</h4>
+                        <p>يمكن فقدان المركبات أو المعدات أو المواقع المستخدمة في النشاط المخالف.</p>
+                    </div>
+
+                    <div class="risk-card">
+                        <i class="fas fa-file-circle-xmark"></i>
+                        <h4>إيقاف النشاط</h4>
+                        <p>قد يتم تعطيل العمل مؤقتًا أو نهائيًا نتيجة التحقيق أو المخالفات الجسيمة.</p>
+                    </div>
+
+                    <div class="risk-card">
+                        <i class="fas fa-scale-balanced"></i>
+                        <h4>تبعات قانونية</h4>
+                        <p>يشمل ذلك الغرامات، القضايا، الملاحقة، وربما تحميل المالك المسؤولية الكاملة.</p>
+                    </div>
+                </div>
+
+                <div class="company-note-box">
+                    <strong>الخلاصة:</strong>
+                    نظام الشركات ليس مجرد وسيلة لكسب المال، بل هو نظام إدارة ونفوذ ومخاطرة. كل نشاط يحتاج أصلًا،
+                    وكل أصل يحتاج تشغيلًا، وكل تشغيل يحتاج قرارًا ذكيًا من المالك. وكلما جمعت بين الجانب القانوني
+                    وغير القانوني، زادت الأرباح المحتملة، لكن زادت معها احتمالات الانكشاف والخسارة.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Grand Legacy</h4>
+                    <p style="color: var(--text-secondary); margin-top: 20px;">
+                        عالم افتراضي مفتوح يتيح لك تجربة حياة ثانية بكل تفاصيلها. اختر مسارك وابنِ إرثك.
+                    </p>
+                    <div class="social-links">
+                        <a href="https://discord.com/invite/KepC53zxzH" target="_blank" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html#home">الرئيسية</a></li>
+                        <li><a href="index.html#features">المميزات</a></li>
+                        <li><a href="index.html#jobs">الوظائف العامة</a></li>
+                        <li><a href="companies.html">الشركات</a></li>
+                        <li><a href="index.html#organizations">المنظمات الحكومية</a></li>
+                        <li><a href="index.html#laws">القوانين</a></li>
+                        <li><a href="index.html#server-rules">قوانين اللعبة</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>الدعم</h4>
+                    <ul class="footer-links">
+                        <li><a href="player-guide.html#faq">الأسئلة الشائعة</a></li>
+                        <li><a href="player-guide.html">دليل اللاعب</a></li>
+                        <li><a href="reports.html">الإبلاغ عن مشكلة</a></li>
+                        <li><a href="track-report.html">تتبع بلاغ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; <span id="current-year">2023</span> Grand Legacy. جميع الحقوق محفوظة.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">
+                    هذا الموقع غير رسمي ويتم إنشاؤه لأغراض العرض.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="notifications.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoImg = document.getElementById('site-logo');
+            if (logoImg) {
+                logoImg.onload = function() {
+                    console.log('✅ تم تحميل شعار الموقع بنجاح');
+                };
+                logoImg.onerror = function() {
+                    console.error('❌ خطأ في تحميل الشعار، تأكد من المسار: photos/logo.png');
+                    logoImg.style.display = 'none';
+                    const fallbackIcon = document.createElement('i');
+                    fallbackIcon.className = 'fas fa-crow';
+                    fallbackIcon.style.fontSize = '2.2rem';
+                    fallbackIcon.style.color = 'var(--primary-color)';
+                    logoImg.parentNode.insertBefore(fallbackIcon, logoImg);
+                };
+            }
+        });
+
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1000);
+        });
+
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('active');
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                this.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        document.querySelectorAll('.footer-links a[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('هذا المحتوى قيد التطوير وسيكون متاحاً قريباً!');
+            });
+        });
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        function animateCounter() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-count'));
+                const duration = 2000;
+                const stepTime = Math.max(Math.floor(duration / target), 20);
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += Math.ceil(target / (duration / stepTime));
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = current;
+                }, stepTime);
+            });
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const joinSection = document.getElementById('join');
+        if (joinSection) {
+            observer.observe(joinSection);
+        }
+    </script>
+</body>
+</html>

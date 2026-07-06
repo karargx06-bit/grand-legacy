@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نموذج البلاغات - Grand Legacy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d4af37;
+            --primary-dark: #b8860b;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --card-bg: #1b1b1b;
+            --text-primary: #ffffff;
+            --text-secondary: #c8c8c8;
+            --danger: #ff6b6b;
+            --success: #55c57a;
+            --border-soft: rgba(212, 175, 55, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif;
+            color: var(--text-primary);
+            background:
+                radial-gradient(circle at 12% 20%, rgba(212, 175, 55, 0.12), transparent 38%),
+                radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.05), transparent 28%),
+                linear-gradient(155deg, #070707 0%, #111111 45%, #151515 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 0 auto;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.82);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .topbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 0;
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .back-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 1px solid var(--border-soft);
+            border-radius: 999px;
+            padding: 8px 14px;
+            transition: 0.25s ease;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 56px 0 22px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .report-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+            padding-bottom: 42px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-right: 3px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.92rem;
+            color: #efefef;
+            font-weight: 700;
+        }
+
+        .required-mark {
+            color: var(--danger);
+            margin-right: 3px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .hint {
+            color: #a8a8a8;
+            font-size: 0.82rem;
+        }
+
+        .checks {
+            margin-top: 14px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .error-box {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(255, 107, 107, 0.12);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #ffd7d7;
+            display: none;
+        }
+
+        .success-box {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(85, 197, 122, 0.14);
+            border: 1px solid rgba(85, 197, 122, 0.35);
+            color: #d7ffe5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-color);
+            margin: 4px 4px 0 0;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .report-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand"><i class="fas fa-triangle-exclamation"></i> مركز البلاغات</div>
+            <a class="back-link" href="index.html"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>نموذج بلاغ منظم</h1>
+        </section>
+
+        <section class="report-layout">
+            <article class="card">
+                <h2>إرسال بلاغ جديد</h2>
+
+                <form id="reportForm" novalidate>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="ingameName">الاسم داخل اللعبة <span class="required-mark">*</span></label>
+                            <input id="ingameName" name="ingameName" type="text" placeholder="مثال: Ahmed_Alharbi" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="discordId">Discord ID <span class="required-mark">*</span></label>
+                            <input id="discordId" name="discordId" type="text" placeholder="username أو User#1234" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="reportType">نوع البلاغ <span class="required-mark">*</span></label>
+                            <select id="reportType" name="reportType" required>
+                                <option value="">اختر نوع البلاغ</option>
+                                <option value="player">بلاغ على لاعب</option>
+                                <option value="bug">Bug / مشكلة تقنية</option>
+                                <option value="exploit">استغلال / غش</option>
+                                <option value="admin">بلاغ إداري</option>
+                                <option value="faction">بلاغ على جهة/فصيل</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="incidentDate">تاريخ الحادثة <span class="required-mark">*</span></label>
+                            <input id="incidentDate" name="incidentDate" type="date" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="incidentTime">وقت الحادثة <span class="required-mark">*</span></label>
+                            <input id="incidentTime" name="incidentTime" type="time" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="location">موقع الحادثة <span class="required-mark">*</span></label>
+                            <input id="location" name="location" type="text" placeholder="مثال: بالقرب من المستشفى المركزي" required>
+                        </div>
+
+                        <div class="field full">
+                            <label for="relatedParties">الأطراف المعنية <span class="required-mark">*</span></label>
+                            <input id="relatedParties" name="relatedParties" type="text" placeholder="اكتب أسماء اللاعبين أو الجهات المرتبطة" required>
+                        </div>
+
+                        <div class="field full">
+                            <label for="shortDesc">وصف مختصر <span class="required-mark">*</span></label>
+                            <input id="shortDesc" name="shortDesc" type="text" minlength="20" placeholder="ملخص سريع لما حدث" required>
+                        </div>
+
+                        <div class="field full">
+                            <label for="fullDesc">الوصف التفصيلي <span class="required-mark">*</span></label>
+                            <textarea id="fullDesc" name="fullDesc" minlength="80" placeholder="اذكر تسلسل الأحداث من البداية للنهاية بشكل واضح" required></textarea>
+                        </div>
+
+                        <div class="field full">
+                            <label for="evidenceLinks">روابط الأدلة <span class="required-mark">*</span></label>
+                            <textarea id="evidenceLinks" name="evidenceLinks" placeholder="ضع روابط الفيديو/الصور/المقاطع" required></textarea>
+                        </div>
+
+                        <div class="field full">
+                            <label for="requestedAction">الإجراء المطلوب <span class="required-mark">*</span></label>
+                            <select id="requestedAction" name="requestedAction" required>
+                                <option value="">اختر الإجراء</option>
+                                <option value="review">مراجعة فقط</option>
+                                <option value="action">اتخاذ إجراء على المخالف</option>
+                                <option value="compensation">تعويض (إن وُجد مبرر)</option>
+                                <option value="clarification">توضيح رسمي من الإدارة</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="checks">
+                        <label class="check"><input type="checkbox" id="ack1" required> أتعهد أن المعلومات المذكورة صحيحة حسب علمي.</label>
+                        <label class="check"><input type="checkbox" id="ack2" required> أتعهد أن البلاغ غير كيدي وغير مبني على معلومات خارج RP.</label>
+                        <label class="check"><input type="checkbox" id="ack3" required> أوافق على أن البلاغ الكيدي قد يعرّضني للعقوبة.</label>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary">إرسال البلاغ</button>
+                        <button type="reset" class="btn btn-secondary">مسح الحقول</button>
+                    </div>
+
+                    <div id="errorBox" class="error-box"></div>
+                    <div id="successBox" class="success-box"></div>
+                </form>
+            </article>
+
+            <aside class="card">
+                <h2>تصنيفات البلاغات</h2>
+                <div>
+                    <span class="tag">بلاغ لاعب</span>
+                    <span class="tag">Bug</span>
+                    <span class="tag">استغلال</span>
+                    <span class="tag">بلاغ إداري</span>
+                    <span class="tag">بلاغ جهة</span>
+                </div>
+                <div class="actions" style="margin-top: 16px;">
+                    <a href="track-report.html" class="btn btn-secondary" style="text-decoration: none;">تتبع بلاغ</a>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="notifications.js"></script>
+    <script>
+        (function () {
+            const form = document.getElementById("reportForm");
+            const errorBox = document.getElementById("errorBox");
+            const successBox = document.getElementById("successBox");
+            const workerUrl = "https://gl-reports-worker0.karargx06.workers.dev";
+
+            function showError(message) {
+                errorBox.textContent = message;
+                errorBox.style.display = "block";
+                successBox.style.display = "none";
+            }
+
+            function showSuccess(message) {
+                successBox.innerHTML = message;
+                successBox.style.display = "block";
+                errorBox.style.display = "none";
+            }
+
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const requiredFields = [
+                    "ingameName",
+                    "discordId",
+                    "reportType",
+                    "incidentDate",
+                    "incidentTime",
+                    "location",
+                    "relatedParties",
+                    "shortDesc",
+                    "fullDesc",
+                    "evidenceLinks",
+                    "requestedAction"
+                ];
+
+                for (const fieldId of requiredFields) {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        showError("الرجاء تعبئة جميع الحقول الإلزامية قبل الإرسال.");
+                        field.focus();
+                        return;
+                    }
+                }
+
+                if (document.getElementById("shortDesc").value.trim().length < 20) {
+                    showError("الوصف المختصر قصير جدًا. الحد الأدنى 20 حرف.");
+                    return;
+                }
+
+                if (document.getElementById("fullDesc").value.trim().length < 80) {
+                    showError("الوصف التفصيلي قصير. الرجاء إضافة تفاصيل أكثر (80 حرف على الأقل).");
+                    return;
+                }
+
+                if (!document.getElementById("ack1").checked || !document.getElementById("ack2").checked || !document.getElementById("ack3").checked) {
+                    showError("لا يمكن إرسال البلاغ قبل الموافقة على جميع الإقرارات.");
+                    return;
+                }
+
+                const payload = {
+                    ingameName: document.getElementById("ingameName").value.trim(),
+                    discordId: document.getElementById("discordId").value.trim(),
+                    reportType: document.getElementById("reportType").value.trim(),
+                    incidentDate: document.getElementById("incidentDate").value.trim(),
+                    incidentTime: document.getElementById("incidentTime").value.trim(),
+                    location: document.getElementById("location").value.trim(),
+                    relatedParties: document.getElementById("relatedParties").value.trim(),
+                    shortDesc: document.getElementById("shortDesc").value.trim(),
+                    fullDesc: document.getElementById("fullDesc").value.trim(),
+                    evidenceLinks: document.getElementById("evidenceLinks").value.trim(),
+                    requestedAction: document.getElementById("requestedAction").value.trim()
+                };
+
+                payload.fullDesc = payload.fullDesc.replace(/\s+/g, " ").trim();
+                payload.shortDesc = payload.shortDesc.replace(/\s+/g, " ").trim();
+
+                try {
+                    async function sendReport(url) {
+                        const response = await fetch(url, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+                        let parsed = null;
+                        try {
+                            parsed = await response.json();
+                        } catch (jsonError) {
+                            parsed = { ok: false, error: "Non-JSON response" };
+                        }
+                        return { response: response, data: parsed };
+                    }
+
+                    let attempt = await sendReport(workerUrl + "/report");
+                    if (!attempt.response.ok || !attempt.data.ok) {
+                        // بعض نسخ الراوتر تتطلب slash نهائي
+                        attempt = await sendReport(workerUrl + "/report/");
+                    }
+                    if (!attempt.response.ok || !attempt.data.ok) {
+                        // توافق مع نسخة Worker القديمة التي تستقبل POST على الجذر /
+                        attempt = await sendReport(workerUrl + "/");
+                    }
+
+                    if (!attempt.response.ok || !attempt.data.ok) {
+                        const reason = attempt.data && (attempt.data.error || attempt.data.details) ? (" (" + (attempt.data.error || attempt.data.details) + ")") : "";
+                        showError("تعذر إرسال البلاغ حاليًا. حاول مرة أخرى أو تأكد من اكتمال البيانات" + reason);
+                        return;
+                    }
+
+                    const returnedTicketId = attempt.data.ticketId || attempt.data.ticket_id || "غير متوفر";
+                    try {
+                        localStorage.setItem("lastReportTicketId", returnedTicketId);
+                        localStorage.setItem("lastReportDiscordId", payload.discordId);
+                    } catch (storageError) {
+                    }
+
+                    showSuccess("تم استلام بلاغك بنجاح.<br>رقم البلاغ: <strong>" + returnedTicketId + "</strong><br>يمكنك تتبعه من صفحة تتبع البلاغات.");
+                    form.reset();
+                } catch (error) {
+                    showError("تعذر الاتصال بخدمة البلاغات. حاول مرة أخرى بعد قليل.");
+                }
+            });
+
+            form.addEventListener("reset", function () {
+                errorBox.style.display = "none";
+                successBox.style.display = "none";
+            });
+        })();
+    </script>
+</body>
+</html>

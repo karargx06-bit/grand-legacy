@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة البلاغات - Grand Legacy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold:#d4af37; --bg:#0a0a0a; --card:#141414; --text:#fff; --muted:#c8c8c8; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:"Cairo",sans-serif; background:linear-gradient(155deg,#070707,#151515); color:var(--text); min-height:100vh; }
+        .container { width:min(1100px,92%); margin:0 auto; padding:18px 0; }
+        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+        .brand { color:var(--gold); font-weight:800; }
+        .back { color:#fff; text-decoration:none; border:1px solid rgba(212,175,55,.3); border-radius:999px; padding:7px 12px; }
+        .card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-right:3px solid var(--gold); border-radius:14px; padding:14px; margin-bottom:12px; }
+        .row { display:grid; grid-template-columns: 1fr 1fr auto auto; gap:10px; }
+        input, select, textarea { width:100%; background:#1b1b1b; color:#fff; border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:10px; font-family:inherit; }
+        button { border:none; background:var(--gold); color:#000; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; font-family:inherit; }
+        table { width:100%; border-collapse:collapse; margin-top:8px; font-size:.92rem; }
+        th, td { border-bottom:1px solid rgba(255,255,255,.08); padding:8px; text-align:right; }
+        th { color:var(--gold); }
+        .muted { color:var(--muted); }
+        .error { color:#ffd7d7; background:rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.35); border-radius:10px; padding:9px; display:none; margin-top:8px; }
+        .ok { color:#d7ffe5; background:rgba(85,197,122,.14); border:1px solid rgba(85,197,122,.35); border-radius:10px; padding:9px; display:none; margin-top:8px; }
+        @media (max-width:900px){ .row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<main class="container">
+    <div class="top">
+        <div class="brand">لوحة إدارة البلاغات</div>
+        <a class="back" href="index.html">العودة للرئيسية</a>
+    </div>
+
+    <section class="card">
+        <div class="row">
+            <input id="adminToken" type="password" placeholder="ADMIN TOKEN">
+            <select id="statusFilter">
+                <option value="">كل الحالات</option>
+                <option value="new">جديد</option>
+                <option value="in_review">قيد المراجعة</option>
+                <option value="resolved">تم الحل</option>
+                <option value="rejected">مرفوض</option>
+            </select>
+            <button id="loadBtn" type="button">تحميل البلاغات</button>
+            <button id="saveTokenBtn" type="button">حفظ التوكن</button>
+        </div>
+        <div id="msgError" class="error"></div>
+        <div id="msgOk" class="ok"></div>
+    </section>
+
+    <section class="card">
+        <h3 class="muted">تحديث حالة بلاغ</h3>
+        <div class="row" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+            <input id="ticketId" type="text" placeholder="Ticket ID">
+            <select id="newStatus">
+                <option value="new">جديد</option>
+                <option value="in_review">قيد المراجعة</option>
+                <option value="resolved">تم الحل</option>
+                <option value="rejected">مرفوض</option>
+            </select>
+            <input id="updatedBy" type="text" placeholder="اسم المشرف">
+            <button id="updateBtn" type="button">تحديث الحالة</button>
+        </div>
+        <textarea id="adminNote" placeholder="ملاحظة الإدارة (سبب القرار)..." style="margin-top:10px;"></textarea>
+    </section>
+
+    <section class="card">
+        <h3 class="muted">قائمة البلاغات</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Ticket</th>
+                <th>الاسم</th>
+                <th>النوع</th>
+                <th>الحالة</th>
+                <th>آخر تحديث</th>
+            </tr>
+            </thead>
+            <tbody id="reportsBody"></tbody>
+        </table>
+    </section>
+</main>
+
+<script src="notifications.js"></script>
+<script>
+    (function () {
+        const workerUrl = "https://gl-reports-worker0.karargx06.workers.dev";
+        const adminToken = document.getElementById("adminToken");
+        const statusFilter = document.getElementById("statusFilter");
+        const loadBtn = document.getElementById("loadBtn");
+        const saveTokenBtn = document.getElementById("saveTokenBtn");
+        const updateBtn = document.getElementById("updateBtn");
+        const ticketIdInput = document.getElementById("ticketId");
+        const newStatus = document.getElementById("newStatus");
+        const updatedBy = document.getElementById("updatedBy");
+        const adminNote = document.getElementById("adminNote");
+        const reportsBody = document.getElementById("reportsBody");
+        const msgError = document.getElementById("msgError");
+        const msgOk = document.getElementById("msgOk");
+
+        function showError(msg) {
+            msgError.textContent = msg;
+            msgError.style.display = "block";
+            msgOk.style.display = "none";
+        }
+        function showOk(msg) {
+            msgOk.textContent = msg;
+            msgOk.style.display = "block";
+            msgError.style.display = "none";
+        }
+        function clearMsgs() {
+            msgError.style.display = "none";
+            msgOk.style.display = "none";
+        }
+        function statusLabel(s) {
+            if (s === "new") return "🆕 جديد";
+            if (s === "in_review") return "🟡 قيد المراجعة";
+            if (s === "resolved") return "✅ تم الحل";
+            if (s === "rejected") return "❌ مرفوض";
+            return s || "-";
+        }
+
+        try {
+            const saved = localStorage.getItem("glAdminToken");
+            if (saved) adminToken.value = saved;
+        } catch (e) {}
+
+        saveTokenBtn.addEventListener("click", function () {
+            try {
+                localStorage.setItem("glAdminToken", adminToken.value.trim());
+                showOk("تم حفظ التوكن محليًا.");
+            } catch (e) {
+                showError("تعذر حفظ التوكن.");
+            }
+        });
+
+        loadBtn.addEventListener("click", async function () {
+            clearMsgs();
+            reportsBody.innerHTML = "";
+            const token = adminToken.value.trim();
+            if (!token) {
+                showError("أدخل ADMIN TOKEN أولًا.");
+                return;
+            }
+
+            const query = statusFilter.value ? "?status=" + encodeURIComponent(statusFilter.value) : "";
+            try {
+                const resp = await fetch(workerUrl + "/admin/list" + query, {
+                    headers: { Authorization: "Bearer " + token }
+                });
+                const data = await resp.json();
+                if (!resp.ok || !data.ok) {
+                    showError("فشل تحميل البلاغات: " + (data.error || "خطأ غير معروف"));
+                    return;
+                }
+                (data.reports || []).forEach(function (r) {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML =
+                        "<td>" + (r.ticket_id || "") + "</td>" +
+                        "<td>" + (r.ingame_name || "") + "</td>" +
+                        "<td>" + (r.report_type || "") + "</td>" +
+                        "<td>" + statusLabel(r.status) + "</td>" +
+                        "<td>" + (r.updated_at || "") + "</td>";
+                    tr.style.cursor = "pointer";
+                    tr.addEventListener("click", function () {
+                        ticketIdInput.value = r.ticket_id || "";
+                        adminNote.value = r.admin_note || "";
+                    });
+                    reportsBody.appendChild(tr);
+                });
+                showOk("تم تحميل " + (data.reports || []).length + " بلاغ.");
+            } catch (e) {
+                showError("تعذر الاتصال بخدمة الإدارة.");
+            }
+        });
+
+        updateBtn.addEventListener("click", async function () {
+            clearMsgs();
+            const token = adminToken.value.trim();
+            const ticketId = ticketIdInput.value.trim();
+            if (!token || !ticketId) {
+                showError("أدخل التوكن ورقم البلاغ.");
+                return;
+            }
+            try {
+                const resp = await fetch(workerUrl + "/admin/update-status", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        ticketId: ticketId,
+                        newStatus: newStatus.value,
+                        note: adminNote.value.trim(),
+                        updatedBy: updatedBy.value.trim() || "admin"
+                    })
+                });
+                const data = await resp.json();
+                if (!resp.ok || !data.ok) {
+                    showError("فشل تحديث الحالة: " + (data.error || "خطأ غير معروف"));
+                    return;
+                }
+                showOk("تم تحديث البلاغ " + ticketId + " إلى " + statusLabel(data.status));
+            } catch (e) {
+                showError("تعذر الاتصال بخدمة الإدارة.");
+            }
+        });
+    })();
+</script>
+</body>
+</html>
