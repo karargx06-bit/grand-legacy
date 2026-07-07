@@ -1418,12 +1418,13 @@
         }
     </style>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/logo.png" type="image/png">
 </head>
 <body>
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-content">
             <div class="loading-emblem">
-                <img src="photos/logo.png" alt="شعار Grand Legacy - نسر" class="eagle-loading-img">
+                <img src="images/logo.png" alt="شعار Grand Legacy - نسر" class="eagle-loading-img">
             </div>
             <h2 class="loading-title">Grand Legacy</h2>
             <p class="loading-text">تجهيز العالم... لحظات ونبدأ</p>
@@ -1435,7 +1436,7 @@
         <div class="container nav-container">
             <a href="#" class="logo">
                 <div class="logo-icon">
-                    <img src="photos/logo.png" alt="شعار Grand Legacy - طائر العقاب" class="logo-eagle-img" id="site-logo">
+                    <img src="images/logo.png" alt="شعار Grand Legacy - طائر العقاب" class="logo-eagle-img" id="site-logo">
                 </div>
                 <div class="logo-text">
                     <h1>Grand Legacy</h1>
@@ -2721,7 +2722,7 @@
                     console.log('✅ تم تحميل شعار الموقع بنجاح');
                 };
                 logoImg.onerror = function() {
-                    console.error('❌ خطأ في تحميل الشعار، تأكد من المسار: photos/logo.png');
+                    console.error('❌ خطأ في تحميل الشعار، تأكد من المسار: images/logo.png');
                     logoImg.style.display = 'none';
                     const fallbackIcon = document.createElement('i');
                     fallbackIcon.className = 'fas fa-crow';

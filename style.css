@@ -309,7 +309,7 @@ a {
     background:
         linear-gradient(90deg, rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.58) 48%, rgba(5, 5, 5, 0.86)),
         linear-gradient(180deg, rgba(216, 183, 93, 0.08), rgba(229, 72, 77, 0.07)),
-        url("photos/grand-legacy-main-hero-4k.jpg");
+        url("images/grand-legacy-main-hero-4k.jpg");
     background-position: center;
     background-size: cover;
     isolation: isolate;
@@ -1746,7 +1746,7 @@ body.drawer-open .sidebar-overlay {
     background:
         linear-gradient(180deg, rgba(216, 183, 93, 0.08), transparent 30%),
         linear-gradient(145deg, rgba(10, 10, 12, 0.97), rgba(6, 6, 7, 0.95)),
-        url("photos/grand-legacy-emblem-4k.jpg");
+        url("images/grand-legacy-emblem-4k.jpg");
     background-position: center;
     background-size: cover;
     box-shadow: -28px 0 70px rgba(0, 0, 0, 0.5);
@@ -1895,7 +1895,7 @@ body.drawer-open .shortcut-drawer {
     opacity: 0.14;
     background-image:
         radial-gradient(circle at 50% 42%, rgba(7, 7, 7, 0.04), rgba(7, 7, 7, 0.86) 54%, rgba(7, 7, 7, 0.96)),
-        url("photos/grand-legacy-emblem-4k.jpg");
+        url("images/grand-legacy-emblem-4k.jpg");
     background-position: center;
     background-size: min(760px, 82vw) auto;
     mix-blend-mode: screen;
@@ -1905,7 +1905,7 @@ body.drawer-open .shortcut-drawer {
     opacity: 0.11;
     background-image:
         radial-gradient(circle at 78% 22%, rgba(7, 7, 7, 0.1), rgba(7, 7, 7, 0.86) 58%, rgba(7, 7, 7, 0.96)),
-        url("photos/grand-legacy-emblem-4k.jpg");
+        url("images/grand-legacy-emblem-4k.jpg");
     background-position: 78% 28%;
     background-size: min(680px, 86vw) auto;
     mix-blend-mode: screen;
@@ -1916,7 +1916,7 @@ body.drawer-open .shortcut-drawer {
     background-image:
         linear-gradient(90deg, rgba(7, 7, 7, 0.94), rgba(7, 7, 7, 0.58) 48%, rgba(7, 7, 7, 0.92)),
         linear-gradient(180deg, rgba(7, 7, 7, 0.82), rgba(7, 7, 7, 0.9)),
-        url("photos/grand-legacy-police-night-4k.jpg");
+        url("images/grand-legacy-police-night-4k.jpg");
     background-position: center;
     background-size: cover;
 }
@@ -1926,7 +1926,7 @@ body.drawer-open .shortcut-drawer {
     background-image:
         linear-gradient(90deg, rgba(7, 7, 7, 0.94), rgba(7, 7, 7, 0.6), rgba(7, 7, 7, 0.94)),
         linear-gradient(180deg, rgba(7, 7, 7, 0.78), rgba(7, 7, 7, 0.94)),
-        url("photos/grand-legacy-cityscape-4k.jpg");
+        url("images/grand-legacy-cityscape-4k.jpg");
     background-position: center;
     background-size: cover;
 }
